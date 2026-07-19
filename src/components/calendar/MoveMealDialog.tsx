@@ -53,12 +53,13 @@ export function MoveMealDialog({
               key={`${day.iso}-${slot}`}
               type="button"
               onClick={() => onSelect(day.iso, slot)}
+              aria-label={`${day.label} ${day.dayNumber} — ${MEAL_SLOT_LABEL[slot]}`}
               className="rounded-lg border border-border px-2 py-2 text-xs hover:border-border-strong hover:bg-surface-raised"
             >
-              <span className="block font-medium">
+              <span aria-hidden="true" className="block font-medium">
                 {day.label} {day.dayNumber}
               </span>
-              <span className="text-foreground-secondary">
+              <span aria-hidden="true" className="text-foreground-secondary">
                 {MEAL_SLOT_LABEL[slot]}
               </span>
             </button>
