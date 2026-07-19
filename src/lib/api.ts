@@ -198,7 +198,7 @@ export const shopping = {
       body: JSON.stringify({ checked }),
     }),
   validate: (id: string) =>
-    request<void>(`/shopping/${id}/validate`, { method: "POST" }),
+    request<ShoppingList>(`/shopping/${id}/validate`, { method: "POST" }),
   remove: (id: string) =>
     request<void>(`/shopping/${id}`, { method: "DELETE" }),
 };
