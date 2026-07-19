@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/lib/auth-context";
 import { calendar, recipes, stock } from "@/lib/api";
-import { formatLongDate, MEAL_SLOT_LABEL, todayIso } from "@/lib/format";
+import { toIsoDate } from "@/lib/date";
+import { formatLongDate, MEAL_SLOT_LABEL } from "@/lib/format";
 import { NAV_ITEMS } from "@/components/nav/nav-items";
 import type { CalendarEntry } from "@/lib/types";
 
@@ -17,7 +18,7 @@ export default function DashboardPage() {
   const [expiringCount, setExpiringCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const today = todayIso();
+    const today = toIsoDate(new Date());
     calendar
       .range(today, today)
       .then(setTodayEntries)
