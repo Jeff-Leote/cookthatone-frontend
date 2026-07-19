@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <main
         id="main-content"
-        className="flex-1 px-4 py-6 pb-20 md:px-8 md:py-8 md:pb-8"
+        className="min-w-0 flex-1 px-4 py-6 pb-20 md:px-8 md:py-8 md:pb-8"
       >
         {children}
       </main>
