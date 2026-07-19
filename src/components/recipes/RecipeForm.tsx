@@ -313,8 +313,8 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
           </p>
         )}
         {ingredientRows.map((row) => (
-          <div key={row.key} className="flex items-end gap-2">
-            <div className="flex flex-1 flex-col gap-1.5">
+          <div key={row.key} className="flex flex-wrap items-end gap-2">
+            <div className="flex min-w-36 flex-1 flex-col gap-1.5">
               <label htmlFor={`ing-${row.key}`} className="sr-only">
                 Ingrédient
               </label>
@@ -324,7 +324,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                 onChange={(e) =>
                   updateIngredientRow(row.key, { ingredientId: e.target.value })
                 }
-                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
               >
                 {catalogue?.map((ing) => (
                   <option key={ing.id} value={ing.id}>
@@ -333,7 +333,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                 ))}
               </select>
             </div>
-            <div className="flex w-24 flex-col gap-1.5">
+            <div className="flex w-20 flex-col gap-1.5">
               <label htmlFor={`qty-${row.key}`} className="sr-only">
                 Quantité
               </label>
@@ -346,10 +346,10 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                 onChange={(e) =>
                   updateIngredientRow(row.key, { quantity: e.target.value })
                 }
-                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
               />
             </div>
-            <div className="flex w-32 flex-col gap-1.5">
+            <div className="flex w-28 flex-col gap-1.5">
               <label htmlFor={`unit-${row.key}`} className="sr-only">
                 Unité
               </label>
@@ -361,7 +361,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                     unit: e.target.value as Unit,
                   })
                 }
-                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -396,7 +396,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
           Étapes
         </h2>
         {stepRows.map((row, index) => (
-          <div key={row.key} className="flex items-start gap-2">
+          <div key={row.key} className="flex flex-wrap items-start gap-2">
             <span
               aria-hidden="true"
               className="mt-2.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent"
@@ -412,7 +412,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
               value={row.instruction}
               onChange={(e) => updateStepRow(row.key, e.target.value)}
               placeholder={`Étape ${index + 1}…`}
-              className="flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
+              className="min-w-40 flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
             />
             <div className="flex flex-col gap-1">
               <Button
