@@ -106,10 +106,13 @@ export const recipes = {
     request<void>(`/recipes/${id}/ingredients/${ingredientId}`, {
       method: "DELETE",
     }),
-  replaceSteps: (id: string, steps: RecipeStep[]) =>
+  replaceSteps: (
+    id: string,
+    steps: { stepOrder: number; instruction: string }[],
+  ) =>
     request<RecipeStep[]>(`/recipes/${id}/steps`, {
       method: "PUT",
-      body: JSON.stringify(steps),
+      body: JSON.stringify({ steps }),
     }),
 };
 
