@@ -60,7 +60,7 @@ export default function RecipesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher une recette…"
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary/60 focus-visible:border-accent"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary focus-visible:border-accent"
         />
       </div>
 
