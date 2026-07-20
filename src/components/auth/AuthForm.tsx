@@ -1,7 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState, type FormEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +19,12 @@ type Tab = "login" | "register";
 
 const PSEUDO_PATTERN = /^[a-zA-Z0-9_]{3,20}$/;
 
+// Connexion/Inscription sont deux routes distinctes (/login, /register) : le
+// changement d'onglet démonte et remonte AuthForm, ce qui perd le focus
+// clavier (rendu à <body>). Ce flag sessionStorage survit au remontage pour
+// que le nouvel onglet actif puisse restaurer le focus lui-même au montage.
+const TAB_SWITCH_FOCUS_KEY = "cookthatone:auth-tab-switch";
+
 export function AuthForm({ initialTab }: { initialTab: Tab }) {
   const router = useRouter();
   const { login, register } = useAuth();
@@ -19,10 +32,20 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const tabListId = useId();
+  const loginTabRef = useRef<HTMLButtonElement>(null);
+  const registerTabRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (sessionStorage.getItem(TAB_SWITCH_FOCUS_KEY) !== initialTab) return;
+    sessionStorage.removeItem(TAB_SWITCH_FOCUS_KEY);
+    (initialTab === "login" ? loginTabRef : registerTabRef).current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function switchTab(next: Tab) {
     setFormError(null);
     setTab(next);
+    sessionStorage.setItem(TAB_SWITCH_FOCUS_KEY, next);
     router.replace(next === "login" ? "/login" : "/register", {
       scroll: false,
     });
@@ -98,6 +121,7 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
         className="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-surface-raised p-1"
       >
         <button
+          ref={loginTabRef}
           type="button"
           role="tab"
           id={`${tabListId}-login-tab`}
@@ -115,6 +139,7 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
           Connexion
         </button>
         <button
+          ref={registerTabRef}
           type="button"
           role="tab"
           id={`${tabListId}-register-tab`}
