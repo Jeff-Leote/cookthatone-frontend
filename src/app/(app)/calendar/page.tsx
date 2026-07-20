@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { MealSlotCell } from "@/components/calendar/MealSlotCell";
 import { RecipePickerDialog } from "@/components/calendar/RecipePickerDialog";
@@ -33,6 +33,17 @@ export default function CalendarPage() {
 
   const weekDays = getWeekDays(weekStart);
 
+  // Planifier/valider/déplacer/retirer remplacent le contenu de la cellule
+  // (ex. le bouton "Planifier" devient "Valider"/"Déplacer"...) : l'élément
+  // qui avait le focus est démonté au rafraîchissement et le focus retombe
+  // sur <body>. On mémorise la cellule concernée pour y replacer le focus
+  // une fois la grille rechargée (RGAA 10.7 / WCAG 2.4.3).
+  const pendingFocusKey = useRef<string | null>(null);
+
+  function cellKey(iso: string, slot: MealSlot) {
+    return `${iso}-${slot}`;
+  }
+
   const loadEntries = useCallback(() => {
     const from = toIsoDate(weekStart);
     const to = toIsoDate(addDays(weekStart, 6));
@@ -48,6 +59,15 @@ export default function CalendarPage() {
   useEffect(() => {
     loadEntries();
   }, [loadEntries]);
+
+  useEffect(() => {
+    if (!pendingFocusKey.current) return;
+    const cell = document.querySelector<HTMLElement>(
+      `[data-cell-key="${pendingFocusKey.current}"] button`,
+    );
+    pendingFocusKey.current = null;
+    cell?.focus();
+  }, [entries]);
 
   useEffect(() => {
     recipesApi
@@ -70,6 +90,7 @@ export default function CalendarPage() {
         plannedDate: planTarget.iso,
         mealSlot: planTarget.slot,
       });
+      pendingFocusKey.current = cellKey(planTarget.iso, planTarget.slot);
       setPlanTarget(null);
       loadEntries();
     } catch (err) {
@@ -85,6 +106,10 @@ export default function CalendarPage() {
   async function handleValidate(entry: CalendarEntry) {
     try {
       await calendar.validate(entry.id, { done: true });
+      pendingFocusKey.current = cellKey(
+        entry.plannedDate.slice(0, 10),
+        entry.mealSlot,
+      );
       loadEntries();
     } catch {
       setError("Impossible de valider ce repas.");
@@ -98,6 +123,10 @@ export default function CalendarPage() {
         done: true,
         actualRecipeId: recipeId,
       });
+      pendingFocusKey.current = cellKey(
+        validateEntry.plannedDate.slice(0, 10),
+        validateEntry.mealSlot,
+      );
       setValidateEntry(null);
       loadEntries();
     } catch {
@@ -110,6 +139,7 @@ export default function CalendarPage() {
     if (!moveEntry) return;
     try {
       await calendar.move(moveEntry.id, { plannedDate: iso, mealSlot: slot });
+      pendingFocusKey.current = cellKey(iso, slot);
       setMoveEntry(null);
       loadEntries();
     } catch (err) {
@@ -132,6 +162,10 @@ export default function CalendarPage() {
     }
     try {
       await calendar.remove(entry.id);
+      pendingFocusKey.current = cellKey(
+        entry.plannedDate.slice(0, 10),
+        entry.mealSlot,
+      );
       loadEntries();
     } catch {
       setError("Impossible de retirer ce repas.");
@@ -194,7 +228,11 @@ export default function CalendarPage() {
               {(["MIDI", "SOIR"] as MealSlot[]).map((slot) => {
                 const entry = findEntry(day, slot);
                 return (
-                  <div key={slot} className="flex flex-col gap-1">
+                  <div
+                    key={slot}
+                    data-cell-key={cellKey(day.iso, slot)}
+                    className="flex flex-col gap-1"
+                  >
                     <p className="text-[10px] uppercase tracking-wide text-foreground-secondary">
                       {MEAL_SLOT_LABEL[slot]}
                     </p>
