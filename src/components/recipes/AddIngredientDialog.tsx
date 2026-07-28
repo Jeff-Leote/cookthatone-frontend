@@ -66,13 +66,7 @@ export function AddIngredientDialog({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
-        <Field
-          label="Nom"
-          name="name"
-          autoFocus
-          autoComplete="off"
-          required
-        />
+        <Field label="Nom" name="name" autoFocus autoComplete="off" required />
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="new-ingredient-unit"

@@ -260,262 +260,268 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
     // dehors de celui-ci, sans quoi on obtient un <form> imbriqué (HTML
     // invalide, casse la soumission et l'hydratation React).
     <>
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
-      <div>
-        <Link
-          href={isEdit && recipeId ? `/recipes/${recipeId}` : "/recipes"}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground"
-        >
-          <span aria-hidden="true">←</span> Retour
-        </Link>
-        <h1 className="font-heading text-2xl font-medium">
-          {isEdit ? "Modifier la recette" : "Nouvelle recette"}
-        </h1>
-      </div>
-
-      {error && (
-        <p
-          role="alert"
-          className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger"
-        >
-          {error}
-        </p>
-      )}
-
-      <Card className="flex flex-col gap-4">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
-          Informations
-        </h2>
-        <Field
-          label="Titre"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="description"
-            className="text-xs font-medium uppercase tracking-wide text-foreground-secondary"
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        <div>
+          <Link
+            href={isEdit && recipeId ? `/recipes/${recipeId}` : "/recipes"}
+            className="mb-4 inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground"
           >
-            Description
-          </label>
-          <textarea
-            id="description"
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
-          />
+            <span aria-hidden="true">←</span> Retour
+          </Link>
+          <h1 className="font-heading text-2xl font-medium">
+            {isEdit ? "Modifier la recette" : "Nouvelle recette"}
+          </h1>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <Field
-            label="Prépa (min)"
-            type="number"
-            min={0}
-            value={prepTimeMin}
-            onChange={(e) => setPrepTimeMin(e.target.value)}
-          />
-          <Field
-            label="Cuisson (min)"
-            type="number"
-            min={0}
-            value={cookTimeMin}
-            onChange={(e) => setCookTimeMin(e.target.value)}
-          />
-          <Field
-            label="Portions"
-            type="number"
-            min={1}
-            value={servings}
-            onChange={(e) => setServings(e.target.value)}
-          />
-        </div>
-      </Card>
 
-      <Card className="flex flex-col gap-4">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
-          Ingrédients
-        </h2>
-        {catalogue && catalogue.length === 0 && (
-          <p className="text-sm text-foreground-secondary">
-            Ton catalogue d&apos;ingrédients est vide. Utilise le bouton «
-            Nouvel ingrédient » ci-dessous, ou gère-le depuis{" "}
-            <Link href="/recipes/ingredients" className="text-accent">
-              le catalogue
-            </Link>
-            .
+        {error && (
+          <p
+            role="alert"
+            className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger"
+          >
+            {error}
           </p>
         )}
-        {ingredientRows.map((row) => (
-          <div key={row.key} className="flex flex-wrap items-end gap-2">
-            <div className="flex min-w-36 flex-1 flex-col gap-1.5">
-              <label htmlFor={`ing-${row.key}`} className="sr-only">
-                Ingrédient
-              </label>
-              <select
-                id={`ing-${row.key}`}
-                value={row.ingredientId}
-                onChange={(e) =>
-                  updateIngredientRow(row.key, { ingredientId: e.target.value })
-                }
-                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+
+        <Card className="flex flex-col gap-4">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
+            Informations
+          </h2>
+          <Field
+            label="Titre"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="description"
+              className="text-xs font-medium uppercase tracking-wide text-foreground-secondary"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <Field
+              label="Prépa (min)"
+              type="number"
+              min={0}
+              value={prepTimeMin}
+              onChange={(e) => setPrepTimeMin(e.target.value)}
+            />
+            <Field
+              label="Cuisson (min)"
+              type="number"
+              min={0}
+              value={cookTimeMin}
+              onChange={(e) => setCookTimeMin(e.target.value)}
+            />
+            <Field
+              label="Portions"
+              type="number"
+              min={1}
+              value={servings}
+              onChange={(e) => setServings(e.target.value)}
+            />
+          </div>
+        </Card>
+
+        <Card className="flex flex-col gap-4">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
+            Ingrédients
+          </h2>
+          {catalogue && catalogue.length === 0 && (
+            <p className="text-sm text-foreground-secondary">
+              Ton catalogue d&apos;ingrédients est vide. Utilise le bouton «
+              Nouvel ingrédient » ci-dessous, ou gère-le depuis{" "}
+              <Link href="/recipes/ingredients" className="text-accent">
+                le catalogue
+              </Link>
+              .
+            </p>
+          )}
+          {ingredientRows.map((row) => (
+            <div key={row.key} className="flex flex-wrap items-end gap-2">
+              <div className="flex min-w-36 flex-1 flex-col gap-1.5">
+                <label htmlFor={`ing-${row.key}`} className="sr-only">
+                  Ingrédient
+                </label>
+                <select
+                  id={`ing-${row.key}`}
+                  value={row.ingredientId}
+                  onChange={(e) =>
+                    updateIngredientRow(row.key, {
+                      ingredientId: e.target.value,
+                    })
+                  }
+                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                >
+                  {catalogue?.map((ing) => (
+                    <option key={ing.id} value={ing.id}>
+                      {ing.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex w-20 flex-col gap-1.5">
+                <label htmlFor={`qty-${row.key}`} className="sr-only">
+                  Quantité
+                </label>
+                <input
+                  id={`qty-${row.key}`}
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={row.quantity}
+                  onChange={(e) =>
+                    updateIngredientRow(row.key, { quantity: e.target.value })
+                  }
+                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                />
+              </div>
+              <div className="flex w-28 flex-col gap-1.5">
+                <label htmlFor={`unit-${row.key}`} className="sr-only">
+                  Unité
+                </label>
+                <select
+                  id={`unit-${row.key}`}
+                  value={row.unit}
+                  onChange={(e) =>
+                    updateIngredientRow(row.key, {
+                      unit: e.target.value as Unit,
+                    })
+                  }
+                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                >
+                  {UNITS.map((u) => (
+                    <option key={u} value={u}>
+                      {UNIT_LABEL[u]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => removeIngredientRow(row.key)}
+                aria-label="Retirer cet ingrédient"
               >
-                {catalogue?.map((ing) => (
-                  <option key={ing.id} value={ing.id}>
-                    {ing.name}
-                  </option>
-                ))}
-              </select>
+                <span aria-hidden="true">✕</span>
+              </Button>
             </div>
-            <div className="flex w-20 flex-col gap-1.5">
-              <label htmlFor={`qty-${row.key}`} className="sr-only">
-                Quantité
-              </label>
-              <input
-                id={`qty-${row.key}`}
-                type="number"
-                min={0}
-                step="any"
-                value={row.quantity}
-                onChange={(e) =>
-                  updateIngredientRow(row.key, { quantity: e.target.value })
-                }
-                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
-              />
-            </div>
-            <div className="flex w-28 flex-col gap-1.5">
-              <label htmlFor={`unit-${row.key}`} className="sr-only">
-                Unité
-              </label>
-              <select
-                id={`unit-${row.key}`}
-                value={row.unit}
-                onChange={(e) =>
-                  updateIngredientRow(row.key, {
-                    unit: e.target.value as Unit,
-                  })
-                }
-                className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
-              >
-                {UNITS.map((u) => (
-                  <option key={u} value={u}>
-                    {UNIT_LABEL[u]}
-                  </option>
-                ))}
-              </select>
-            </div>
+          ))}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={addIngredientRow}
+              disabled={!catalogue || catalogue.length === 0}
+              className="self-start"
+            >
+              <span aria-hidden="true">+</span> Ajouter un ingrédient
+            </Button>
             <Button
               type="button"
               variant="ghost"
-              onClick={() => removeIngredientRow(row.key)}
-              aria-label="Retirer cet ingrédient"
+              onClick={() => setAddIngredientOpen(true)}
+              className="self-start"
             >
-              <span aria-hidden="true">✕</span>
+              <span aria-hidden="true">+</span> Nouvel ingrédient
             </Button>
           </div>
-        ))}
-        <div className="flex flex-wrap gap-2">
+        </Card>
+
+        <Card className="flex flex-col gap-4">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
+            Étapes
+          </h2>
+          {stepRows.map((row, index) => (
+            <div key={row.key} className="flex flex-wrap items-start gap-2">
+              <span
+                aria-hidden="true"
+                className="mt-2.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent"
+              >
+                {index + 1}
+              </span>
+              <label htmlFor={`step-${row.key}`} className="sr-only">
+                Étape {index + 1}
+              </label>
+              <textarea
+                id={`step-${row.key}`}
+                rows={2}
+                value={row.instruction}
+                onChange={(e) => updateStepRow(row.key, e.target.value)}
+                placeholder={`Étape ${index + 1}…`}
+                className="min-w-40 flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
+              />
+              <div className="flex flex-col gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => moveStepRow(index, -1)}
+                  disabled={index === 0}
+                  aria-label={`Monter l'étape ${index + 1}`}
+                  className="px-2 py-1"
+                >
+                  ↑
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => moveStepRow(index, 1)}
+                  disabled={index === stepRows.length - 1}
+                  aria-label={`Descendre l'étape ${index + 1}`}
+                  className="px-2 py-1"
+                >
+                  ↓
+                </Button>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => removeStepRow(row.key)}
+                aria-label={`Retirer l'étape ${index + 1}`}
+              >
+                <span aria-hidden="true">✕</span>
+              </Button>
+            </div>
+          ))}
           <Button
             type="button"
             variant="secondary"
-            onClick={addIngredientRow}
-            disabled={!catalogue || catalogue.length === 0}
+            onClick={addStepRow}
             className="self-start"
           >
-            <span aria-hidden="true">+</span> Ajouter un ingrédient
+            <span aria-hidden="true">+</span> Ajouter une étape
           </Button>
+        </Card>
+
+        <div className="flex gap-3">
           <Button
             type="button"
-            variant="ghost"
-            onClick={() => setAddIngredientOpen(true)}
-            className="self-start"
+            variant="secondary"
+            onClick={() => router.back()}
           >
-            <span aria-hidden="true">+</span> Nouvel ingrédient
+            Annuler
+          </Button>
+          <Button type="submit" disabled={submitting}>
+            <span aria-hidden="true">✓</span>{" "}
+            {submitting ? "Enregistrement…" : "Enregistrer"}
           </Button>
         </div>
-      </Card>
+      </form>
 
-      <Card className="flex flex-col gap-4">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
-          Étapes
-        </h2>
-        {stepRows.map((row, index) => (
-          <div key={row.key} className="flex flex-wrap items-start gap-2">
-            <span
-              aria-hidden="true"
-              className="mt-2.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent"
-            >
-              {index + 1}
-            </span>
-            <label htmlFor={`step-${row.key}`} className="sr-only">
-              Étape {index + 1}
-            </label>
-            <textarea
-              id={`step-${row.key}`}
-              rows={2}
-              value={row.instruction}
-              onChange={(e) => updateStepRow(row.key, e.target.value)}
-              placeholder={`Étape ${index + 1}…`}
-              className="min-w-40 flex-1 rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground focus-visible:border-accent"
-            />
-            <div className="flex flex-col gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => moveStepRow(index, -1)}
-                disabled={index === 0}
-                aria-label={`Monter l'étape ${index + 1}`}
-                className="px-2 py-1"
-              >
-                ↑
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => moveStepRow(index, 1)}
-                disabled={index === stepRows.length - 1}
-                aria-label={`Descendre l'étape ${index + 1}`}
-                className="px-2 py-1"
-              >
-                ↓
-              </Button>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => removeStepRow(row.key)}
-              aria-label={`Retirer l'étape ${index + 1}`}
-            >
-              <span aria-hidden="true">✕</span>
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={addStepRow}
-          className="self-start"
-        >
-          <span aria-hidden="true">+</span> Ajouter une étape
-        </Button>
-      </Card>
-
-      <div className="flex gap-3">
-        <Button type="button" variant="secondary" onClick={() => router.back()}>
-          Annuler
-        </Button>
-        <Button type="submit" disabled={submitting}>
-          <span aria-hidden="true">✓</span>{" "}
-          {submitting ? "Enregistrement…" : "Enregistrer"}
-        </Button>
-      </div>
-    </form>
-
-    <AddIngredientDialog
-      open={addIngredientOpen}
-      onSubmit={handleCreateIngredient}
-      onClose={() => setAddIngredientOpen(false)}
-    />
+      <AddIngredientDialog
+        open={addIngredientOpen}
+        onSubmit={handleCreateIngredient}
+        onClose={() => setAddIngredientOpen(false)}
+      />
     </>
   );
 }
