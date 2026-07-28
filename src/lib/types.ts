@@ -15,12 +15,17 @@ export interface User {
   id: string;
   email: string;
   pseudo: string;
+  emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface AuthResponse {
   access_token: string;
+}
+
+export interface RegisterResponse {
+  message: string;
 }
 
 export interface Ingredient {

@@ -6,6 +6,7 @@ import type {
   MealSlot,
   Recipe,
   RecipeStep,
+  RegisterResponse,
   ShoppingItem,
   ShoppingList,
   StockItem,
@@ -54,7 +55,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 export const auth = {
   register: (data: { email: string; pseudo: string; password: string }) =>
-    request<AuthResponse>("/auth/register", {
+    request<RegisterResponse>("/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
     }),

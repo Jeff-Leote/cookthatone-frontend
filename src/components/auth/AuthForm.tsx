@@ -18,6 +18,7 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [registerMessage, setRegisterMessage] = useState<string | null>(null);
   const tabListId = useId();
 
   function switchTab(next: Tab) {
@@ -79,8 +80,8 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
 
     setSubmitting(true);
     try {
-      await register(email, pseudo, password);
-      router.push("/dashboard");
+      const message = await register(email, pseudo, password);
+      setRegisterMessage(message);
     } catch (err) {
       setFormError(
         err instanceof ApiError ? err.message : "Une erreur est survenue.",
@@ -169,6 +170,27 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
             {submitting ? "Connexion…" : "Se connecter"}
           </Button>
         </form>
+      ) : registerMessage ? (
+        <div
+          id={`${tabListId}-register-panel`}
+          role="tabpanel"
+          aria-labelledby={`${tabListId}-register-tab`}
+          className="flex flex-col gap-4"
+        >
+          <p
+            role="status"
+            className="rounded-lg border border-success/40 bg-success/5 px-3 py-2.5 text-sm text-success"
+          >
+            {registerMessage}
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => switchTab("login")}
+          >
+            Aller à la connexion
+          </Button>
+        </div>
       ) : (
         <form
           id={`${tabListId}-register-panel`}
