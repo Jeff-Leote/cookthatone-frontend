@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
+import { AddIngredientDialog } from "./AddIngredientDialog";
 import {
   ApiError,
   ingredients as ingredientsApi,
@@ -51,6 +52,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addIngredientOpen, setAddIngredientOpen] = useState(false);
 
   useEffect(() => {
     ingredientsApi
@@ -118,6 +120,33 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
 
   function removeIngredientRow(key: string) {
     setIngredientRows((rows) => rows.filter((row) => row.key !== key));
+  }
+
+  async function handleCreateIngredient(data: {
+    name: string;
+    defaultUnit: Unit;
+  }) {
+    try {
+      const created = await ingredientsApi.create(data);
+      setCatalogue((c) => [...(c ?? []), created]);
+      setIngredientRows((rows) => [
+        ...rows,
+        {
+          key: newKey(),
+          ingredientId: created.id,
+          quantity: "1",
+          unit: created.defaultUnit,
+        },
+      ]);
+      setAddIngredientOpen(false);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Impossible de créer cet ingrédient.",
+      );
+      setAddIngredientOpen(false);
+    }
   }
 
   function addStepRow() {
@@ -227,6 +256,10 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   }
 
   return (
+    // <AddIngredientDialog> contient son propre <form> : il doit rester en
+    // dehors de celui-ci, sans quoi on obtient un <form> imbriqué (HTML
+    // invalide, casse la soumission et l'hydratation React).
+    <>
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
       <div>
         <Link
@@ -305,11 +338,12 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
         </h2>
         {catalogue && catalogue.length === 0 && (
           <p className="text-sm text-foreground-secondary">
-            Ton catalogue d&apos;ingrédients est vide.{" "}
+            Ton catalogue d&apos;ingrédients est vide. Utilise le bouton «
+            Nouvel ingrédient » ci-dessous, ou gère-le depuis{" "}
             <Link href="/recipes/ingredients" className="text-accent">
-              Ajoute des ingrédients
-            </Link>{" "}
-            avant d&apos;en associer à cette recette.
+              le catalogue
+            </Link>
+            .
           </p>
         )}
         {ingredientRows.map((row) => (
@@ -380,15 +414,25 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
             </Button>
           </div>
         ))}
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={addIngredientRow}
-          disabled={!catalogue || catalogue.length === 0}
-          className="self-start"
-        >
-          <span aria-hidden="true">+</span> Ajouter un ingrédient
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={addIngredientRow}
+            disabled={!catalogue || catalogue.length === 0}
+            className="self-start"
+          >
+            <span aria-hidden="true">+</span> Ajouter un ingrédient
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setAddIngredientOpen(true)}
+            className="self-start"
+          >
+            <span aria-hidden="true">+</span> Nouvel ingrédient
+          </Button>
+        </div>
       </Card>
 
       <Card className="flex flex-col gap-4">
@@ -466,5 +510,12 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
         </Button>
       </div>
     </form>
+
+    <AddIngredientDialog
+      open={addIngredientOpen}
+      onSubmit={handleCreateIngredient}
+      onClose={() => setAddIngredientOpen(false)}
+    />
+    </>
   );
 }
