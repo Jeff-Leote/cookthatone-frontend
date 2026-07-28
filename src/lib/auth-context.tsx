@@ -20,7 +20,13 @@ interface AuthContextValue {
    * vers /login, seulement proposer de réessayer. */
   authError: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, pseudo: string, password: string) => Promise<void>;
+  /** Ne connecte plus automatiquement : le compte doit d'abord être validé
+   * par email. Retourne le message de confirmation à afficher. */
+  register: (
+    email: string,
+    pseudo: string,
+    password: string,
+  ) => Promise<string>;
   logout: () => void;
   retry: () => void;
 }
@@ -80,14 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (email: string, pseudo: string, password: string) => {
-      const { access_token } = await auth.register({
-        email,
-        pseudo,
-        password,
-      });
-      setToken(access_token);
-      const me = await auth.me();
-      setUser(me);
+      const { message } = await auth.register({ email, pseudo, password });
+      return message;
     },
     [],
   );
