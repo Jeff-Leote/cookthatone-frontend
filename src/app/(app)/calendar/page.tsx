@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { MealSlotCell } from "@/components/calendar/MealSlotCell";
 import { RecipePickerDialog } from "@/components/calendar/RecipePickerDialog";
+import { PortionsDialog } from "@/components/calendar/PortionsDialog";
 import { MoveMealDialog } from "@/components/calendar/MoveMealDialog";
 import { ApiError, calendar, recipes as recipesApi } from "@/lib/api";
 import {
@@ -26,6 +27,7 @@ export default function CalendarPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [planTarget, setPlanTarget] = useState<PlanTarget | null>(null);
+  const [planRecipe, setPlanRecipe] = useState<Recipe | null>(null);
   const [moveEntry, setMoveEntry] = useState<CalendarEntry | null>(null);
   const [validateEntry, setValidateEntry] = useState<CalendarEntry | null>(
     null,
@@ -62,15 +64,27 @@ export default function CalendarPage() {
     );
   }
 
-  async function handlePlan(recipeId: string) {
-    if (!planTarget) return;
+  function handleRecipeSelected(recipeId: string) {
+    const recipe = allRecipes.find((r) => r.id === recipeId);
+    if (!recipe) return;
+    setPlanRecipe(recipe);
+  }
+
+  function closePlanFlow() {
+    setPlanTarget(null);
+    setPlanRecipe(null);
+  }
+
+  async function handleConfirmPortions(servings: number) {
+    if (!planTarget || !planRecipe) return;
     try {
       await calendar.create({
-        recipeId,
+        recipeId: planRecipe.id,
         plannedDate: planTarget.iso,
         mealSlot: planTarget.slot,
+        servings,
       });
-      setPlanTarget(null);
+      closePlanFlow();
       loadEntries();
     } catch (err) {
       setError(
@@ -78,7 +92,7 @@ export default function CalendarPage() {
           ? err.message
           : "Impossible de planifier ce repas.",
       );
-      setPlanTarget(null);
+      closePlanFlow();
     }
   }
 
@@ -219,11 +233,18 @@ export default function CalendarPage() {
       )}
 
       <RecipePickerDialog
-        open={planTarget !== null}
+        open={planTarget !== null && planRecipe === null}
         title="Planifier une recette"
         recipes={allRecipes}
-        onSelect={handlePlan}
-        onClose={() => setPlanTarget(null)}
+        onSelect={handleRecipeSelected}
+        onClose={closePlanFlow}
+      />
+
+      <PortionsDialog
+        open={planTarget !== null && planRecipe !== null}
+        recipe={planRecipe}
+        onConfirm={handleConfirmPortions}
+        onClose={closePlanFlow}
       />
 
       <RecipePickerDialog

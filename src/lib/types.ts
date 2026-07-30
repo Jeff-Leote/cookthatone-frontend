@@ -66,6 +66,7 @@ export interface CalendarEntry {
   recipeId: string;
   plannedDate: string;
   mealSlot: MealSlot;
+  servings: number;
   done: boolean;
   actualRecipeId: string | null;
   validatedAt: string | null;

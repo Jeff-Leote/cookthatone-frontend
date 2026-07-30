@@ -52,6 +52,9 @@ export function MealSlotCell({
       }`}
     >
       <p className="font-medium">{title}</p>
+      <p className="text-foreground-secondary">
+        {entry.servings} portion{entry.servings > 1 ? "s" : ""}
+      </p>
       {entry.done && (
         <p className="flex items-center gap-1 text-success">
           <span aria-hidden="true">✓</span>
