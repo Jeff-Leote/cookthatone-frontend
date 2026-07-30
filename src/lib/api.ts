@@ -141,6 +141,7 @@ export const calendar = {
     recipeId: string;
     plannedDate: string;
     mealSlot: MealSlot;
+    servings: number;
   }) =>
     request<CalendarEntry>("/calendar", {
       method: "POST",
