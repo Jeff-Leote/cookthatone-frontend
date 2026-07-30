@@ -35,7 +35,12 @@ export function RecipePickerDialog({
   return (
     <dialog
       ref={dialogRef}
-      onClose={onClose}
+      // "cancel" ne se declenche que sur une fermeture voulue par
+      // l'utilisateur (touche Echap) ; "close" se declenche aussi pour une
+      // fermeture programmatique (ex: on enchaine sur une autre boite de
+      // dialogue apres avoir choisi une recette), qu'on ne veut pas traiter
+      // comme une annulation.
+      onCancel={onClose}
       className="w-full max-w-sm rounded-xl border border-border bg-surface p-0 text-foreground backdrop:bg-black/60"
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
