@@ -102,11 +102,7 @@ export default function StockPage() {
   }
 
   async function handleRemoveSelected() {
-    if (
-      !window.confirm(
-        `Retirer ${selected.size} article(s) du stock ?`,
-      )
-    ) {
+    if (!window.confirm(`Retirer ${selected.size} article(s) du stock ?`)) {
       return;
     }
     try {

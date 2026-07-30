@@ -228,9 +228,7 @@ export default function ShoppingPage() {
                   onClick={() => handleToggleAll(checkedCount < totalCount)}
                   className="text-sm text-accent underline-offset-2 hover:underline"
                 >
-                  {checkedCount < totalCount
-                    ? "Tout cocher"
-                    : "Tout décocher"}
+                  {checkedCount < totalCount ? "Tout cocher" : "Tout décocher"}
                 </button>
               )}
             </div>
