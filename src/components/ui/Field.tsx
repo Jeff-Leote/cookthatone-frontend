@@ -47,7 +47,7 @@ export function Field({
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={`rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary/60 focus-visible:border-accent ${
+        className={`rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary focus-visible:border-accent ${
           error ? "border-danger" : ""
         } ${className}`}
         {...props}

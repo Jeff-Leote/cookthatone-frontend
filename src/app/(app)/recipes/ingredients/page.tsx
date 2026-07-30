@@ -99,7 +99,7 @@ export default function IngredientsPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nom de l'ingrédient"
-            className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary/60 focus-visible:border-accent"
+            className="rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary focus-visible:border-accent"
           />
         </div>
         <div className="flex flex-col gap-1.5">
