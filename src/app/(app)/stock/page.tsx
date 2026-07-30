@@ -17,6 +17,11 @@ const TONE_CLASSES = {
   neutral: "text-foreground-secondary",
 };
 
+const STOCK_LEVEL_DOT = {
+  empty: "bg-danger",
+  available: "bg-success",
+};
+
 export default function StockPage() {
   const [items, setItems] = useState<StockItem[] | null>(null);
   const [catalogue, setCatalogue] = useState<Ingredient[]>([]);
@@ -204,6 +209,7 @@ export default function StockPage() {
               {items.map((item) => {
                 const status = getExpiryStatus(item.expiresAt);
                 const name = item.ingredient?.name ?? "Ingrédient";
+                const isEmpty = item.quantity <= 0;
                 return (
                   <tr key={item.id} className="border-b border-border">
                     <td className="py-2.5">
@@ -220,7 +226,26 @@ export default function StockPage() {
                         className="h-4 w-4 accent-accent"
                       />
                     </td>
-                    <td className="py-2.5 font-medium">{name}</td>
+                    <td className="py-2.5 font-medium">
+                      <div className="flex items-center gap-2">
+                        <span
+                          aria-hidden="true"
+                          title={isEmpty ? "Stock épuisé" : "En stock"}
+                          className={`h-2 w-2 shrink-0 rounded-full ${
+                            isEmpty
+                              ? STOCK_LEVEL_DOT.empty
+                              : STOCK_LEVEL_DOT.available
+                          }`}
+                        />
+                        <span
+                          className={
+                            isEmpty ? "text-foreground-secondary" : undefined
+                          }
+                        >
+                          {name}
+                        </span>
+                      </div>
+                    </td>
                     <td className="py-2.5">
                       <label className="sr-only" htmlFor={`qty-${item.id}`}>
                         Quantité de {name}
@@ -238,7 +263,11 @@ export default function StockPage() {
                               handleQuantityChange(item, value);
                             }
                           }}
-                          className="w-20 rounded-lg border border-border bg-surface px-2 py-1.5 text-sm text-foreground focus-visible:border-accent"
+                          className={`w-20 rounded-lg border bg-surface px-2 py-1.5 text-sm focus-visible:border-accent ${
+                            isEmpty
+                              ? "border-danger/40 text-danger"
+                              : "border-border text-foreground"
+                          }`}
                         />
                         <span>{UNIT_LABEL[item.unit] ?? item.unit}</span>
                       </div>
