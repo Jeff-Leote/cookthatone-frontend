@@ -22,6 +22,7 @@ export default function StockPage() {
   const [catalogue, setCatalogue] = useState<Ingredient[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   function loadStock() {
     stockApi
@@ -87,6 +88,36 @@ export default function StockPage() {
     }
   }
 
+  function toggleSelected(id: string, checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll(checked: boolean) {
+    setSelected(checked ? new Set(items?.map((i) => i.id)) : new Set());
+  }
+
+  async function handleRemoveSelected() {
+    if (
+      !window.confirm(
+        `Retirer ${selected.size} article(s) du stock ?`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await Promise.all([...selected].map((id) => stockApi.remove(id)));
+      setSelected(new Set());
+      loadStock();
+    } catch {
+      setError("Impossible de retirer les articles sélectionnés.");
+    }
+  }
+
   const expiringCount =
     items?.filter((i) => {
       const status = getExpiryStatus(i.expiresAt);
@@ -103,6 +134,16 @@ export default function StockPage() {
               <span aria-hidden="true">⚠️</span>
               Bientôt périmés {expiringCount}
             </span>
+          )}
+          {selected.size > 0 && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleRemoveSelected}
+            >
+              <span aria-hidden="true">🗑️</span> Supprimer la sélection (
+              {selected.size})
+            </Button>
           )}
           <Button type="button" onClick={() => setAddOpen(true)}>
             <span aria-hidden="true">+</span> Ajouter
@@ -138,6 +179,18 @@ export default function StockPage() {
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-foreground-secondary">
                 <th scope="col" className="py-2 font-medium">
+                  <label className="sr-only" htmlFor="select-all-stock">
+                    Tout sélectionner
+                  </label>
+                  <input
+                    id="select-all-stock"
+                    type="checkbox"
+                    checked={items.length > 0 && selected.size === items.length}
+                    onChange={(e) => toggleSelectAll(e.target.checked)}
+                    className="h-4 w-4 accent-accent"
+                  />
+                </th>
+                <th scope="col" className="py-2 font-medium">
                   Ingrédient
                 </th>
                 <th scope="col" className="py-2 font-medium">
@@ -157,6 +210,20 @@ export default function StockPage() {
                 const name = item.ingredient?.name ?? "Ingrédient";
                 return (
                   <tr key={item.id} className="border-b border-border">
+                    <td className="py-2.5">
+                      <label className="sr-only" htmlFor={`select-${item.id}`}>
+                        Sélectionner {name}
+                      </label>
+                      <input
+                        id={`select-${item.id}`}
+                        type="checkbox"
+                        checked={selected.has(item.id)}
+                        onChange={(e) =>
+                          toggleSelected(item.id, e.target.checked)
+                        }
+                        className="h-4 w-4 accent-accent"
+                      />
+                    </td>
                     <td className="py-2.5 font-medium">{name}</td>
                     <td className="py-2.5">
                       <label className="sr-only" htmlFor={`qty-${item.id}`}>

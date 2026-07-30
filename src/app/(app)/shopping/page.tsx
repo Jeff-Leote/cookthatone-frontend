@@ -102,6 +102,13 @@ export default function ShoppingPage() {
 
   async function handleUnvalidate() {
     if (!list) return;
+    if (
+      !window.confirm(
+        "Dévalider cette liste ? Le stock ajouté lors de la validation sera retiré.",
+      )
+    ) {
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -115,6 +122,25 @@ export default function ShoppingPage() {
       );
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleToggleAll(checked: boolean) {
+    if (!list?.items) return;
+    const targets = list.items.filter((i) => i.checked !== checked);
+    if (targets.length === 0) return;
+    // Mise à jour optimiste, comme pour une case individuelle.
+    setList({
+      ...list,
+      items: list.items.map((i) => ({ ...i, checked })),
+    });
+    try {
+      await Promise.all(
+        targets.map((i) => shopping.toggleItem(list.id, i.id, checked)),
+      );
+    } catch {
+      setError("Impossible de mettre à jour tous les articles.");
+      loadList();
     }
   }
 
@@ -196,6 +222,17 @@ export default function ShoppingPage() {
               <p className="text-sm text-foreground-secondary">
                 {checkedCount}/{totalCount} articles cochés
               </p>
+              {!list.validated && totalCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleToggleAll(checkedCount < totalCount)}
+                  className="text-sm text-accent underline-offset-2 hover:underline"
+                >
+                  {checkedCount < totalCount
+                    ? "Tout cocher"
+                    : "Tout décocher"}
+                </button>
+              )}
             </div>
             {!list.validated && (
               <div className="flex gap-2">
