@@ -200,6 +200,8 @@ export const shopping = {
     }),
   validate: (id: string) =>
     request<ShoppingList>(`/shopping/${id}/validate`, { method: "POST" }),
+  unvalidate: (id: string) =>
+    request<ShoppingList>(`/shopping/${id}/unvalidate`, { method: "POST" }),
   remove: (id: string) =>
     request<void>(`/shopping/${id}`, { method: "DELETE" }),
 };

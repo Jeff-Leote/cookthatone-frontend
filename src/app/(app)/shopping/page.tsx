@@ -100,6 +100,24 @@ export default function ShoppingPage() {
     }
   }
 
+  async function handleUnvalidate() {
+    if (!list) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const updated = await shopping.unvalidate(list.id);
+      setList(updated);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Impossible de dévalider les courses.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleDelete() {
     if (!list) return;
     if (!window.confirm("Supprimer cette liste de courses ?")) return;
@@ -202,10 +220,20 @@ export default function ShoppingPage() {
           </div>
 
           {list.validated && (
-            <p className="flex items-center gap-1.5 text-sm text-success">
-              <span aria-hidden="true">✓</span>
-              Courses validées — le stock a été mis à jour.
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="flex items-center gap-1.5 text-sm text-success">
+                <span aria-hidden="true">✓</span>
+                Courses validées — le stock a été mis à jour.
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleUnvalidate}
+                disabled={busy}
+              >
+                {busy ? "Dévalidation…" : "Dévalider"}
+              </Button>
+            </div>
           )}
 
           {totalCount === 0 ? (
