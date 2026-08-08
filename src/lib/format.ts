@@ -1,3 +1,22 @@
+/** "Liste du 08 au 15 août 2026" (ou "Liste du 08 août 2026" pour un seul jour). */
+export function formatShoppingListTitle(
+  periodStart: string,
+  periodEnd: string,
+): string {
+  const start = new Date(periodStart);
+  const end = new Date(periodEnd);
+  const dayFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit" });
+  const fullFmt = new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  if (start.getTime() === end.getTime()) {
+    return `Liste du ${fullFmt.format(start)}`;
+  }
+  return `Liste du ${dayFmt.format(start)} au ${fullFmt.format(end)}`;
+}
+
 export function formatLongDate(date: Date = new Date()): string {
   const formatted = new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",

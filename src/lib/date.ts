@@ -68,3 +68,58 @@ export function formatFullDate(date: Date): string {
   }).format(date);
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
+
+/** 1ᵉʳ du mois contenant `date`, minuit local. */
+export function getMonthStart(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), 1);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+export function addMonths(date: Date, months: number): Date {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1);
+}
+
+export function formatMonthLabel(date: Date): string {
+  const formatted = new Intl.DateTimeFormat("fr-FR", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
+
+/** "8 — 15 août 2026", ou "28 juil. — 3 août 2026" si les mois diffèrent. */
+export function formatDateRange(start: Date, end: Date): string {
+  const fmt = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
+  return `${fmt.format(start)} — ${fmt.format(end)} ${end.getFullYear()}`;
+}
+
+/**
+ * Premier et dernier jour (inclusif) du mois contenant `date`, en ISO.
+ * Sert à savoir si une liste de courses (bornée par ses propres dates ISO)
+ * chevauche le mois affiché, par comparaison de chaînes plutôt que d'objets
+ * Date (voir toIsoDate : évite les pièges de fuseau horaire).
+ */
+export function getMonthBoundsIso(date: Date): {
+  startIso: string;
+  endIso: string;
+} {
+  const start = new Date(date.getFullYear(), date.getMonth(), 1);
+  const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  return { startIso: toIsoDate(start), endIso: toIsoDate(end) };
+}
+
+/** `periodStartIso`/`periodEndIso` peuvent inclure une heure (ex: réponse API) ; seuls les 10 premiers caractères comptent. */
+export function monthOverlapsRange(
+  monthDate: Date,
+  periodStartIso: string,
+  periodEndIso: string,
+): boolean {
+  const { startIso, endIso } = getMonthBoundsIso(monthDate);
+  const start = periodStartIso.slice(0, 10);
+  const end = periodEndIso.slice(0, 10);
+  return start <= endIso && end >= startIso;
+}

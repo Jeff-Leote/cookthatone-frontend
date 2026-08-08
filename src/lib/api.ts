@@ -133,8 +133,10 @@ export const ingredients = {
 // ---- calendar -----------------------------------------------------------
 
 export const calendar = {
-  week: (date?: string) =>
-    request<CalendarEntry[]>(`/calendar/week${date ? `?date=${date}` : ""}`),
+  week: (date?: string) => {
+    const query = date ? `?date=${date}` : "";
+    return request<CalendarEntry[]>(`/calendar/week${query}`);
+  },
   range: (from: string, to: string) =>
     request<CalendarEntry[]>(`/calendar?from=${from}&to=${to}`),
   create: (data: {
@@ -188,10 +190,10 @@ export const stock = {
 
 export const shopping = {
   list: () => request<ShoppingList[]>("/shopping"),
-  generate: (weekStart: string) =>
+  generate: (periodStart: string, periodEnd: string) =>
     request<ShoppingList>("/shopping/generate", {
       method: "POST",
-      body: JSON.stringify({ weekStart }),
+      body: JSON.stringify({ periodStart, periodEnd }),
     }),
   get: (id: string) => request<ShoppingList>(`/shopping/${id}`),
   toggleItem: (id: string, itemId: string, checked: boolean) =>
