@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -33,7 +34,9 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(false);
@@ -99,12 +102,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
+  // Sans useMemo, un nouvel objet litteral est cree a chaque rendu de
+  // AuthProvider, ce qui re-rendrait tous les consommateurs du contexte
+  // meme quand rien n'a reellement change.
+  const value = useMemo(
+    () => ({ user, loading, authError, login, register, logout, retry }),
+    [user, loading, authError, login, register, logout, retry],
+  );
+
   return (
-    <AuthContext.Provider
-      value={{ user, loading, authError, login, register, logout, retry }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
 }
 

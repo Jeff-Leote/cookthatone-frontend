@@ -2,93 +2,153 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { GenerateShoppingListDialog } from "@/components/shopping/GenerateShoppingListDialog";
 import { ApiError, shopping } from "@/lib/api";
-import { addDays, formatWeekRange, getWeekStart, toIsoDate } from "@/lib/date";
-import { UNIT_LABEL } from "@/lib/format";
+import {
+  addMonths,
+  formatMonthLabel,
+  getMonthStart,
+  monthOverlapsRange,
+} from "@/lib/date";
+import { formatShoppingListTitle, UNIT_LABEL } from "@/lib/format";
 import type { ShoppingList } from "@/lib/types";
 
 export default function ShoppingPage() {
-  const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()));
-  const [list, setList] = useState<ShoppingList | null | undefined>(undefined);
+  const [monthDate, setMonthDate] = useState(() => getMonthStart(new Date()));
+  const [lists, setLists] = useState<ShoppingList[] | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busyListId, setBusyListId] = useState<string | null>(null);
+  const [generateOpen, setGenerateOpen] = useState(false);
 
-  const weekStartIso = toIsoDate(weekStart);
-
-  const fetchList = useCallback(async () => {
+  const loadLists = useCallback(async () => {
     const all = await shopping.list();
-    const match = all.find((l) => l.weekStart.slice(0, 10) === weekStartIso);
-    if (!match) return null;
-    return shopping.get(match.id);
-  }, [weekStartIso]);
+    const overlapping = all.filter((l) =>
+      monthOverlapsRange(monthDate, l.periodStart, l.periodEnd),
+    );
+    const detailed = await Promise.all(
+      overlapping.map((l) => shopping.get(l.id)),
+    );
+    return detailed.sort((a, b) => a.periodStart.localeCompare(b.periodStart));
+  }, [monthDate]);
 
-  // Recharge à chaque changement de semaine. `cancelled` évite d'écraser
+  // Recharge à chaque changement de mois. `cancelled` évite d'écraser
   // l'état avec la réponse d'une requête devenue obsolète (navigation
-  // rapide entre semaines).
+  // rapide entre mois). L'état "Chargement…" est déclenché par les
+  // gestionnaires qui changent `monthDate` (pas ici : cf. no-set-state-in-effect).
   useEffect(() => {
     let cancelled = false;
-    fetchList()
+    loadLists()
       .then((data) => {
         if (cancelled) return;
-        setList(data);
+        setLists(data);
         setError(null);
       })
       .catch(() => {
-        if (!cancelled) setError("Impossible de charger la liste de courses.");
+        if (!cancelled) {
+          setError("Impossible de charger les listes de courses.");
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [fetchList]);
+  }, [loadLists]);
 
-  const loadList = useCallback(async () => {
-    setError(null);
+  function goToMonth(next: Date) {
+    setLists(undefined);
+    setMonthDate(next);
+  }
+
+  async function refresh() {
     try {
-      setList(await fetchList());
+      setLists(await loadLists());
     } catch {
-      setError("Impossible de charger la liste de courses.");
+      setError("Impossible de charger les listes de courses.");
     }
-  }, [fetchList]);
+  }
 
-  async function handleGenerate() {
-    setBusy(true);
+  function handleGenerated(list: ShoppingList) {
+    // La plage choisie peut tomber hors du mois actuellement affiché ;
+    // on bascule sur le mois de la nouvelle liste pour qu'elle soit visible.
+    goToMonth(getMonthStart(new Date(list.periodStart)));
+  }
+
+  async function handleRegenerate(list: ShoppingList) {
+    setBusyListId(list.id);
     setError(null);
     try {
-      await shopping.generate(weekStartIso);
-      await loadList();
+      const updated = await shopping.generate(
+        list.periodStart.slice(0, 10),
+        list.periodEnd.slice(0, 10),
+      );
+      setLists((prev) =>
+        prev?.map((l) => (l.id === list.id ? updated : l)),
+      );
     } catch (err) {
       setError(
         err instanceof ApiError
           ? err.message
-          : "Impossible de générer la liste.",
+          : "Impossible de régénérer la liste.",
       );
     } finally {
-      setBusy(false);
+      setBusyListId(null);
     }
   }
 
-  async function handleToggle(itemId: string, checked: boolean) {
-    if (!list) return;
+  async function handleToggle(
+    list: ShoppingList,
+    itemId: string,
+    checked: boolean,
+  ) {
     // Mise à jour optimiste : la case doit répondre immédiatement au clic.
-    setList({
-      ...list,
-      items: list.items?.map((i) => (i.id === itemId ? { ...i, checked } : i)),
-    });
+    setLists((prev) =>
+      prev?.map((l) =>
+        l.id === list.id
+          ? {
+              ...l,
+              items: l.items?.map((i) =>
+                i.id === itemId ? { ...i, checked } : i,
+              ),
+            }
+          : l,
+      ),
+    );
     try {
       await shopping.toggleItem(list.id, itemId, checked);
     } catch {
       setError("Impossible de mettre à jour cet article.");
-      loadList();
+      refresh();
     }
   }
 
-  async function handleValidate() {
-    if (!list) return;
-    setBusy(true);
+  async function handleToggleAll(list: ShoppingList, checked: boolean) {
+    if (!list.items) return;
+    const targets = list.items.filter((i) => i.checked !== checked);
+    if (targets.length === 0) return;
+    setLists((prev) =>
+      prev?.map((l) =>
+        l.id === list.id
+          ? { ...l, items: l.items?.map((i) => ({ ...i, checked })) }
+          : l,
+      ),
+    );
+    try {
+      await Promise.all(
+        targets.map((i) => shopping.toggleItem(list.id, i.id, checked)),
+      );
+    } catch {
+      setError("Impossible de mettre à jour tous les articles.");
+      refresh();
+    }
+  }
+
+  async function handleValidate(list: ShoppingList) {
+    setBusyListId(list.id);
     setError(null);
     try {
       const updated = await shopping.validate(list.id);
-      setList(updated);
+      setLists((prev) =>
+        prev?.map((l) => (l.id === list.id ? updated : l)),
+      );
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -96,12 +156,11 @@ export default function ShoppingPage() {
           : "Impossible de valider les courses.",
       );
     } finally {
-      setBusy(false);
+      setBusyListId(null);
     }
   }
 
-  async function handleUnvalidate() {
-    if (!list) return;
+  async function handleUnvalidate(list: ShoppingList) {
     if (
       !window.confirm(
         "Dévalider cette liste ? Le stock ajouté lors de la validation sera retiré.",
@@ -109,11 +168,13 @@ export default function ShoppingPage() {
     ) {
       return;
     }
-    setBusy(true);
+    setBusyListId(list.id);
     setError(null);
     try {
       const updated = await shopping.unvalidate(list.id);
-      setList(updated);
+      setLists((prev) =>
+        prev?.map((l) => (l.id === list.id ? updated : l)),
+      );
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -121,42 +182,19 @@ export default function ShoppingPage() {
           : "Impossible de dévalider les courses.",
       );
     } finally {
-      setBusy(false);
+      setBusyListId(null);
     }
   }
 
-  async function handleToggleAll(checked: boolean) {
-    if (!list?.items) return;
-    const targets = list.items.filter((i) => i.checked !== checked);
-    if (targets.length === 0) return;
-    // Mise à jour optimiste, comme pour une case individuelle.
-    setList({
-      ...list,
-      items: list.items.map((i) => ({ ...i, checked })),
-    });
-    try {
-      await Promise.all(
-        targets.map((i) => shopping.toggleItem(list.id, i.id, checked)),
-      );
-    } catch {
-      setError("Impossible de mettre à jour tous les articles.");
-      loadList();
-    }
-  }
-
-  async function handleDelete() {
-    if (!list) return;
+  async function handleDelete(list: ShoppingList) {
     if (!window.confirm("Supprimer cette liste de courses ?")) return;
     try {
       await shopping.remove(list.id);
-      setList(null);
+      setLists((prev) => prev?.filter((l) => l.id !== list.id));
     } catch {
       setError("Impossible de supprimer cette liste.");
     }
   }
-
-  const checkedCount = list?.items?.filter((i) => i.checked).length ?? 0;
-  const totalCount = list?.items?.length ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -166,21 +204,24 @@ export default function ShoppingPage() {
           <Button
             type="button"
             variant="secondary"
-            aria-label="Semaine précédente"
-            onClick={() => setWeekStart((d) => addDays(d, -7))}
+            aria-label="Mois précédent"
+            onClick={() => goToMonth(addMonths(monthDate, -1))}
           >
             ←
           </Button>
-          <span className="text-sm text-foreground-secondary">
-            {formatWeekRange(weekStart)}
+          <span className="min-w-32 text-center text-sm text-foreground-secondary">
+            {formatMonthLabel(monthDate)}
           </span>
           <Button
             type="button"
             variant="secondary"
-            aria-label="Semaine suivante"
-            onClick={() => setWeekStart((d) => addDays(d, 7))}
+            aria-label="Mois suivant"
+            onClick={() => goToMonth(addMonths(monthDate, 1))}
           >
             →
+          </Button>
+          <Button type="button" onClick={() => setGenerateOpen(true)}>
+            <span aria-hidden="true">+</span> Générer une liste de courses
           </Button>
         </div>
       </div>
@@ -194,141 +235,160 @@ export default function ShoppingPage() {
         </p>
       )}
 
-      {list === undefined && !error && (
-        <p role="status" className="text-sm text-foreground-secondary">
+      {lists === undefined && !error && (
+        <output className="text-sm text-foreground-secondary">
           Chargement…
-        </p>
+        </output>
       )}
 
-      {list === null && (
+      {lists?.length === 0 && (
         <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-6">
           <p className="text-sm text-foreground-secondary">
-            Aucune liste générée pour la semaine du {formatWeekRange(weekStart)}
-            .
+            Aucune liste de courses pour {formatMonthLabel(monthDate)}.
           </p>
-          <Button type="button" onClick={handleGenerate} disabled={busy}>
-            {busy ? "Génération…" : "Générer la liste de cette semaine"}
+          <Button type="button" onClick={() => setGenerateOpen(true)}>
+            Générer une liste de courses
           </Button>
         </div>
       )}
 
-      {list && (
-        <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="font-medium">
-                Semaine du {formatWeekRange(weekStart)}
-              </p>
-              <p className="text-sm text-foreground-secondary">
-                {checkedCount}/{totalCount} articles cochés
-              </p>
-              {!list.validated && totalCount > 0 && (
-                <button
-                  type="button"
-                  onClick={() => handleToggleAll(checkedCount < totalCount)}
-                  className="text-sm text-accent underline-offset-2 hover:underline"
-                >
-                  {checkedCount < totalCount ? "Tout cocher" : "Tout décocher"}
-                </button>
+      {lists?.map((list) => {
+        const busy = busyListId === list.id;
+        const checkedCount = list.items?.filter((i) => i.checked).length ?? 0;
+        const totalCount = list.items?.length ?? 0;
+
+        return (
+          <div
+            key={list.id}
+            className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-medium">
+                  {formatShoppingListTitle(list.periodStart, list.periodEnd)}
+                </p>
+                <p className="text-sm text-foreground-secondary">
+                  {checkedCount}/{totalCount} articles cochés
+                </p>
+                {!list.validated && totalCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleToggleAll(list, checkedCount < totalCount)
+                    }
+                    className="text-sm text-accent underline-offset-2 hover:underline"
+                  >
+                    {checkedCount < totalCount ? "Tout cocher" : "Tout décocher"}
+                  </button>
+                )}
+              </div>
+              {!list.validated && (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => handleRegenerate(list)}
+                    disabled={busy}
+                  >
+                    Régénérer
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleDelete(list)}
+                    aria-label="Supprimer cette liste"
+                  >
+                    <span aria-hidden="true">🗑️</span>
+                  </Button>
+                </div>
               )}
             </div>
-            {!list.validated && (
-              <div className="flex gap-2">
+
+            {list.validated && (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="flex items-center gap-1.5 text-sm text-success">
+                  <span aria-hidden="true">✓</span>{" "}
+                  Courses validées — le stock a été mis à jour.
+                </p>
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={handleGenerate}
+                  onClick={() => handleUnvalidate(list)}
                   disabled={busy}
                 >
-                  Régénérer
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleDelete}
-                  aria-label="Supprimer cette liste"
-                >
-                  <span aria-hidden="true">🗑️</span>
+                  {busy ? "Dévalidation…" : "Dévalider"}
                 </Button>
               </div>
             )}
-          </div>
 
-          {list.validated && (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="flex items-center gap-1.5 text-sm text-success">
-                <span aria-hidden="true">✓</span>
-                Courses validées — le stock a été mis à jour.
+            {totalCount === 0 ? (
+              <p className="text-sm text-foreground-secondary">
+                Rien à acheter : le stock couvre déjà tous les besoins de
+                cette période.
               </p>
+            ) : (
+              <ul className="flex flex-col gap-1">
+                {list.items?.map((item) => {
+                  const id = `shopping-item-${item.id}`;
+                  const missing = Math.max(
+                    0,
+                    item.quantityNeeded - item.quantityInStock,
+                  );
+                  return (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-raised"
+                    >
+                      <input
+                        id={id}
+                        type="checkbox"
+                        checked={item.checked}
+                        disabled={list.validated}
+                        onChange={(e) =>
+                          handleToggle(list, item.id, e.target.checked)
+                        }
+                        className="h-4 w-4 accent-accent"
+                      />
+                      <label
+                        htmlFor={id}
+                        className={`flex-1 text-sm ${
+                          item.checked
+                            ? "text-foreground-secondary line-through"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {item.ingredient?.name ?? "Ingrédient"}
+                      </label>
+                      <span className="text-sm text-foreground-secondary">
+                        {missing} {UNIT_LABEL[item.unit] ?? item.unit}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {!list.validated && totalCount > 0 && (
               <Button
                 type="button"
-                variant="secondary"
-                onClick={handleUnvalidate}
-                disabled={busy}
+                onClick={() => handleValidate(list)}
+                disabled={busy || checkedCount === 0}
+                className="self-end"
               >
-                {busy ? "Dévalidation…" : "Dévalider"}
+                <span aria-hidden="true">✓</span>{" "}
+                {busy ? "Validation…" : `Valider (${checkedCount})`}
               </Button>
-            </div>
-          )}
+            )}
+          </div>
+        );
+      })}
 
-          {totalCount === 0 ? (
-            <p className="text-sm text-foreground-secondary">
-              Rien à acheter : le stock couvre déjà tous les besoins de la
-              semaine.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-1">
-              {list.items?.map((item) => {
-                const id = `shopping-item-${item.id}`;
-                const missing = Math.max(
-                  0,
-                  item.quantityNeeded - item.quantityInStock,
-                );
-                return (
-                  <li
-                    key={item.id}
-                    className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-raised"
-                  >
-                    <input
-                      id={id}
-                      type="checkbox"
-                      checked={item.checked}
-                      disabled={list.validated}
-                      onChange={(e) => handleToggle(item.id, e.target.checked)}
-                      className="h-4 w-4 accent-accent"
-                    />
-                    <label
-                      htmlFor={id}
-                      className={`flex-1 text-sm ${
-                        item.checked
-                          ? "text-foreground-secondary line-through"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {item.ingredient?.name ?? "Ingrédient"}
-                    </label>
-                    <span className="text-sm text-foreground-secondary">
-                      {missing} {UNIT_LABEL[item.unit] ?? item.unit}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          {!list.validated && totalCount > 0 && (
-            <Button
-              type="button"
-              onClick={handleValidate}
-              disabled={busy || checkedCount === 0}
-              className="self-end"
-            >
-              <span aria-hidden="true">✓</span>{" "}
-              {busy ? "Validation…" : `Valider (${checkedCount})`}
-            </Button>
-          )}
-        </div>
-      )}
+      <GenerateShoppingListDialog
+        open={generateOpen}
+        defaultDate={monthDate}
+        onGenerated={handleGenerated}
+        onClose={() => setGenerateOpen(false)}
+      />
     </div>
   );
 }

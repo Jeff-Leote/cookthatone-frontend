@@ -97,7 +97,8 @@ export interface ShoppingItem {
 
 export interface ShoppingList {
   id: string;
-  weekStart: string;
+  periodStart: string;
+  periodEnd: string;
   validated: boolean;
   createdAt: string;
   items?: ShoppingItem[];
