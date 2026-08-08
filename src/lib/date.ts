@@ -90,7 +90,10 @@ export function formatMonthLabel(date: Date): string {
 
 /** "8 — 15 août 2026", ou "28 juil. — 3 août 2026" si les mois diffèrent. */
 export function formatDateRange(start: Date, end: Date): string {
-  const fmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
+  const fmt = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "short",
+  });
   return `${fmt.format(start)} — ${fmt.format(end)} ${end.getFullYear()}`;
 }
 
@@ -100,7 +103,10 @@ export function formatDateRange(start: Date, end: Date): string {
  * chevauche le mois affiché, par comparaison de chaînes plutôt que d'objets
  * Date (voir toIsoDate : évite les pièges de fuseau horaire).
  */
-export function getMonthBoundsIso(date: Date): { startIso: string; endIso: string } {
+export function getMonthBoundsIso(date: Date): {
+  startIso: string;
+  endIso: string;
+} {
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
   const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   return { startIso: toIsoDate(start), endIso: toIsoDate(end) };

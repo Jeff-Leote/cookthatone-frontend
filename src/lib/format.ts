@@ -1,5 +1,8 @@
 /** "Liste du 08 au 15 août 2026" (ou "Liste du 08 août 2026" pour un seul jour). */
-export function formatShoppingListTitle(periodStart: string, periodEnd: string): string {
+export function formatShoppingListTitle(
+  periodStart: string,
+  periodEnd: string,
+): string {
   const start = new Date(periodStart);
   const end = new Date(periodEnd);
   const dayFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit" });

@@ -35,9 +35,7 @@ export default function RootPage() {
       id="main-content"
       className="flex min-h-screen items-center justify-center"
     >
-      <output className="text-sm text-foreground-secondary">
-        Chargement…
-      </output>
+      <output className="text-sm text-foreground-secondary">Chargement…</output>
     </main>
   );
 }

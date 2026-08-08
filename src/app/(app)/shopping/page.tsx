@@ -80,9 +80,7 @@ export default function ShoppingPage() {
         list.periodStart.slice(0, 10),
         list.periodEnd.slice(0, 10),
       );
-      setLists((prev) =>
-        prev?.map((l) => (l.id === list.id ? updated : l)),
-      );
+      setLists((prev) => prev?.map((l) => (l.id === list.id ? updated : l)));
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -146,9 +144,7 @@ export default function ShoppingPage() {
     setError(null);
     try {
       const updated = await shopping.validate(list.id);
-      setLists((prev) =>
-        prev?.map((l) => (l.id === list.id ? updated : l)),
-      );
+      setLists((prev) => prev?.map((l) => (l.id === list.id ? updated : l)));
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -172,9 +168,7 @@ export default function ShoppingPage() {
     setError(null);
     try {
       const updated = await shopping.unvalidate(list.id);
-      setLists((prev) =>
-        prev?.map((l) => (l.id === list.id ? updated : l)),
-      );
+      setLists((prev) => prev?.map((l) => (l.id === list.id ? updated : l)));
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -278,7 +272,9 @@ export default function ShoppingPage() {
                     }
                     className="text-sm text-accent underline-offset-2 hover:underline"
                   >
-                    {checkedCount < totalCount ? "Tout cocher" : "Tout décocher"}
+                    {checkedCount < totalCount
+                      ? "Tout cocher"
+                      : "Tout décocher"}
                   </button>
                 )}
               </div>
@@ -307,8 +303,8 @@ export default function ShoppingPage() {
             {list.validated && (
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="flex items-center gap-1.5 text-sm text-success">
-                  <span aria-hidden="true">✓</span>{" "}
-                  Courses validées — le stock a été mis à jour.
+                  <span aria-hidden="true">✓</span> Courses validées — le stock
+                  a été mis à jour.
                 </p>
                 <Button
                   type="button"
@@ -323,8 +319,8 @@ export default function ShoppingPage() {
 
             {totalCount === 0 ? (
               <p className="text-sm text-foreground-secondary">
-                Rien à acheter : le stock couvre déjà tous les besoins de
-                cette période.
+                Rien à acheter : le stock couvre déjà tous les besoins de cette
+                période.
               </p>
             ) : (
               <ul className="flex flex-col gap-1">

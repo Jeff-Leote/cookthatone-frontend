@@ -88,8 +88,8 @@ export function GenerateShoppingListDialog({
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
         <p className="text-sm text-foreground-secondary">
-          Choisis une plage de jours : chaque jour doit avoir au moins un
-          repas planifié au calendrier.
+          Choisis une plage de jours : chaque jour doit avoir au moins un repas
+          planifié au calendrier.
         </p>
         <div className="grid grid-cols-2 gap-3">
           <Field
