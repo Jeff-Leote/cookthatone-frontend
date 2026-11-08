@@ -6,7 +6,7 @@ import { MealSlotCell } from "@/components/calendar/MealSlotCell";
 import { RecipePickerDialog } from "@/components/calendar/RecipePickerDialog";
 import { PortionsDialog } from "@/components/calendar/PortionsDialog";
 import { MoveMealDialog } from "@/components/calendar/MoveMealDialog";
-import { ApiError, calendar, recipes as recipesApi } from "@/lib/api";
+import { ApiError, calendar } from "@/lib/api";
 import {
   addDays,
   formatWeekRange,
@@ -23,7 +23,6 @@ type PlanTarget = { iso: string; slot: MealSlot };
 export default function CalendarPage() {
   const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()));
   const [entries, setEntries] = useState<CalendarEntry[] | null>(null);
-  const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const [planTarget, setPlanTarget] = useState<PlanTarget | null>(null);
@@ -51,22 +50,13 @@ export default function CalendarPage() {
     loadEntries();
   }, [loadEntries]);
 
-  useEffect(() => {
-    recipesApi
-      .list()
-      .then(setAllRecipes)
-      .catch(() => setAllRecipes([]));
-  }, []);
-
   function findEntry(day: WeekDay, slot: MealSlot) {
     return entries?.find(
       (e) => e.plannedDate.slice(0, 10) === day.iso && e.mealSlot === slot,
     );
   }
 
-  function handleRecipeSelected(recipeId: string) {
-    const recipe = allRecipes.find((r) => r.id === recipeId);
-    if (!recipe) return;
+  function handleRecipeSelected(recipe: Recipe) {
     setPlanRecipe(recipe);
   }
 
@@ -105,12 +95,12 @@ export default function CalendarPage() {
     }
   }
 
-  async function handleValidateDifferent(recipeId: string) {
+  async function handleValidateDifferent(recipe: Recipe) {
     if (!validateEntry) return;
     try {
       await calendar.validate(validateEntry.id, {
         done: true,
-        actualRecipeId: recipeId,
+        actualRecipeId: recipe.id,
       });
       setValidateEntry(null);
       loadEntries();
@@ -235,7 +225,6 @@ export default function CalendarPage() {
       <RecipePickerDialog
         open={planTarget !== null && planRecipe === null}
         title="Planifier une recette"
-        recipes={allRecipes}
         onSelect={handleRecipeSelected}
         onClose={closePlanFlow}
       />
@@ -250,7 +239,6 @@ export default function CalendarPage() {
       <RecipePickerDialog
         open={validateEntry !== null}
         title="Recette réellement cuisinée"
-        recipes={allRecipes}
         onSelect={handleValidateDifferent}
         onClose={() => setValidateEntry(null)}
       />
