@@ -6,16 +6,32 @@ import { Button } from "@/components/ui/Button";
 import { ApiError, ingredients as ingredientsApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
+import { EQUIVALENCE_EXAMPLES } from "@/lib/units";
 
 const UNITS = Object.keys(UNIT_LABEL) as Unit[];
+
+const EQUIVALENCE_ERROR =
+  "Le poids d'une cuillère à soupe doit être un nombre positif, 100 g au maximum.";
+
+// null : champ vide (rien à enregistrer) ; "invalid" : valeur refusée par l'API.
+function parseEquivalence(raw: string): number | null | "invalid" {
+  if (raw.trim() === "") return null;
+  const value = Number(raw.replace(",", "."));
+  return Number.isFinite(value) && value > 0 && value <= 100
+    ? value
+    : "invalid";
+}
 
 export default function IngredientsPage() {
   const [items, setItems] = useState<Ingredient[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [unit, setUnit] = useState<Unit>("G");
+  const [equivalence, setEquivalence] = useState("");
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     ingredientsApi
@@ -27,21 +43,89 @@ export default function IngredientsPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!name.trim()) return;
+    const grams = parseEquivalence(equivalence);
+    if (grams === "invalid") {
+      setError(EQUIVALENCE_ERROR);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
       const created = await ingredientsApi.create({
         name: name.trim(),
         defaultUnit: unit,
+        ...(grams !== null && { gramsPerTablespoon: grams }),
       });
       setItems((current) => [...(current ?? []), created]);
       setName("");
+      setEquivalence("");
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Une erreur est survenue.",
       );
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  // Le choix est contrôlé par l'état : si l'API refuse (changement de famille
+  // d'un ingrédient utilisé), la liste garde l'ancienne unité.
+  async function handleUnitChange(ingredient: Ingredient, defaultUnit: Unit) {
+    if (defaultUnit === ingredient.defaultUnit) return;
+    setUpdatingId(ingredient.id);
+    setError(null);
+    try {
+      const updated = await ingredientsApi.update(ingredient.id, {
+        defaultUnit,
+      });
+      setItems(
+        (current) =>
+          current?.map((i) => (i.id === ingredient.id ? updated : i)) ?? null,
+      );
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Impossible de modifier l'unité.",
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
+  // Enregistré à la sortie du champ. Une valeur vide ou identique ne change rien.
+  async function handleEquivalenceCommit(ingredient: Ingredient) {
+    const draft = drafts[ingredient.id];
+    setDrafts((current) => {
+      const rest = { ...current };
+      delete rest[ingredient.id];
+      return rest;
+    });
+    if (draft === undefined) return;
+    const grams = parseEquivalence(draft);
+    if (grams === null || grams === ingredient.gramsPerTablespoon) return;
+    if (grams === "invalid") {
+      setError(EQUIVALENCE_ERROR);
+      return;
+    }
+    setUpdatingId(ingredient.id);
+    setError(null);
+    try {
+      const updated = await ingredientsApi.update(ingredient.id, {
+        gramsPerTablespoon: grams,
+      });
+      setItems(
+        (current) =>
+          current?.map((i) => (i.id === ingredient.id ? updated : i)) ?? null,
+      );
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Impossible de modifier l'équivalence.",
+      );
+    } finally {
+      setUpdatingId(null);
     }
   }
 
@@ -119,10 +203,36 @@ export default function IngredientsPage() {
             ))}
           </select>
         </div>
+        <div className="flex w-32 flex-col gap-1.5">
+          <label htmlFor="ingredient-equivalence" className="sr-only">
+            Poids d&apos;une c. à soupe en grammes (facultatif)
+          </label>
+          <input
+            id="ingredient-equivalence"
+            type="number"
+            min={0}
+            max={100}
+            step="any"
+            inputMode="decimal"
+            value={equivalence}
+            onChange={(e) => setEquivalence(e.target.value)}
+            placeholder="g / c. à soupe"
+            className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-secondary/60 focus-visible:border-accent"
+          />
+        </div>
         <Button type="submit" disabled={submitting || !name.trim()}>
           <span aria-hidden="true">+</span> Ajouter
         </Button>
       </form>
+
+      <p className="text-xs text-foreground-secondary">
+        Changer l&apos;unité d&apos;un ingrédient convertit son stock (g en kg,
+        ml en cl…). Le poids d&apos;une cuillère à soupe relie les grammes aux
+        cuillères pour cet ingrédient : le stock et la liste de courses en
+        tiennent compte. Sans lui, les cuillères sont estimées à 15 g et passer
+        des g aux ml est refusé tant que l&apos;ingrédient est utilisé. À titre
+        indicatif : {EQUIVALENCE_EXAMPLES}. Vérifie sur ton produit.
+      </p>
 
       {items === null && !error && (
         <p role="status" className="text-sm text-foreground-secondary">
@@ -148,6 +258,9 @@ export default function IngredientsPage() {
                 Unité par défaut
               </th>
               <th scope="col" className="py-2 font-medium">
+                g / c. à soupe
+              </th>
+              <th scope="col" className="py-2 font-medium">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
@@ -156,8 +269,58 @@ export default function IngredientsPage() {
             {items.map((ingredient) => (
               <tr key={ingredient.id} className="border-b border-border">
                 <td className="py-2.5 font-medium">{ingredient.name}</td>
-                <td className="py-2.5 text-foreground-secondary">
-                  {UNIT_LABEL[ingredient.defaultUnit]}
+                <td className="py-2.5">
+                  <label htmlFor={`unit-${ingredient.id}`} className="sr-only">
+                    Unité de {ingredient.name}
+                  </label>
+                  <select
+                    id={`unit-${ingredient.id}`}
+                    value={ingredient.defaultUnit}
+                    disabled={updatingId === ingredient.id}
+                    onChange={(e) =>
+                      handleUnitChange(ingredient, e.target.value as Unit)
+                    }
+                    className="min-h-11 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground focus-visible:border-accent disabled:opacity-50"
+                  >
+                    {UNITS.map((u) => (
+                      <option key={u} value={u}>
+                        {UNIT_LABEL[u]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="py-2.5">
+                  <label
+                    htmlFor={`equivalence-${ingredient.id}`}
+                    className="sr-only"
+                  >
+                    Poids d&apos;une c. à soupe de {ingredient.name}, en grammes
+                  </label>
+                  <input
+                    id={`equivalence-${ingredient.id}`}
+                    type="number"
+                    min={0}
+                    max={100}
+                    step="any"
+                    inputMode="decimal"
+                    placeholder="—"
+                    value={
+                      drafts[ingredient.id] ??
+                      String(ingredient.gramsPerTablespoon ?? "")
+                    }
+                    disabled={updatingId === ingredient.id}
+                    onChange={(e) =>
+                      setDrafts((current) => ({
+                        ...current,
+                        [ingredient.id]: e.target.value,
+                      }))
+                    }
+                    onBlur={() => handleEquivalenceCommit(ingredient)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") e.currentTarget.blur();
+                    }}
+                    className="min-h-11 w-20 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-foreground-secondary/60 focus-visible:border-accent disabled:opacity-50"
+                  />
                 </td>
                 <td className="py-2.5 text-right">
                   <Button

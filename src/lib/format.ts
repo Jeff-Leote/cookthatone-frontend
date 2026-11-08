@@ -35,6 +35,7 @@ export const UNIT_LABEL: Record<string, string> = {
   G: "g",
   KG: "kg",
   ML: "ml",
+  CL: "cl",
   L: "l",
   PIECE: "pcs",
   CUILLERE_A_SOUPE: "c. à soupe",
