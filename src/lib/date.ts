@@ -60,6 +60,33 @@ export function formatWeekRange(weekStart: Date): string {
   return `${fmt.format(weekStart)} — ${fmt.format(weekEnd)} ${weekEnd.getFullYear()}`;
 }
 
+/** "Semaine du 9 au 15 novembre 2026" (mois et année précisés des deux côtés si la semaine les chevauche). */
+export function formatWeekTitle(weekStart: Date): string {
+  const weekEnd = addDays(weekStart, 6);
+  const dayMonth = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+  });
+  const full = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const startText =
+    weekStart.getFullYear() !== weekEnd.getFullYear()
+      ? full.format(weekStart)
+      : weekStart.getMonth() === weekEnd.getMonth()
+        ? String(weekStart.getDate())
+        : dayMonth.format(weekStart);
+  return `Semaine du ${startText} au ${full.format(weekEnd)}`;
+}
+
+/** Date locale à partir d'une date ISO (`2026-11-11` ou `2026-11-11T00:00:00.000Z`) : évite le décalage d'un jour selon le fuseau. */
+export function parseIsoDate(iso: string): Date {
+  const [year, month, day] = iso.slice(0, 10).split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function formatFullDate(date: Date): string {
   const formatted = new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",
