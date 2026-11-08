@@ -6,8 +6,6 @@ import { Field } from "@/components/ui/Field";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
 
-const UNITS = Object.keys(UNIT_LABEL) as Unit[];
-
 interface AddStockDialogProps {
   open: boolean;
   ingredients: Ingredient[];
@@ -28,24 +26,20 @@ export function AddStockDialog({
 }: AddStockDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [ingredientId, setIngredientId] = useState(ingredients[0]?.id ?? "");
-  const [unit, setUnit] = useState<Unit>(ingredients[0]?.defaultUnit ?? "G");
+  // L'unité est celle de l'ingrédient, fixée à sa création : le stock, les
+  // recettes et la liste de courses restent comparables.
+  const unit: Unit =
+    ingredients.find((i) => i.id === ingredientId)?.defaultUnit ?? "G";
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (open && !dialog.open) {
       setIngredientId(ingredients[0]?.id ?? "");
-      setUnit(ingredients[0]?.defaultUnit ?? "G");
       dialog.showModal();
     }
     if (!open && dialog.open) dialog.close();
   }, [open, ingredients]);
-
-  function handleIngredientChange(id: string) {
-    setIngredientId(id);
-    const ingredient = ingredients.find((i) => i.id === id);
-    if (ingredient) setUnit(ingredient.defaultUnit);
-  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -96,7 +90,7 @@ export function AddStockDialog({
             <select
               id="stock-ingredient"
               value={ingredientId}
-              onChange={(e) => handleIngredientChange(e.target.value)}
+              onChange={(e) => setIngredientId(e.target.value)}
               className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
             >
               {ingredients.map((ing) => (
@@ -117,24 +111,25 @@ export function AddStockDialog({
               required
             />
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="stock-unit"
+              <span
+                id="stock-unit-label"
                 className="text-xs font-medium uppercase tracking-wide text-foreground-secondary"
               >
                 Unité
-              </label>
-              <select
-                id="stock-unit"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value as Unit)}
-                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+              </span>
+              <p
+                aria-labelledby="stock-unit-label"
+                aria-describedby="stock-unit-hint"
+                className="flex min-h-11 items-center rounded-lg border border-border bg-surface-raised px-3.5 text-sm text-foreground"
               >
-                {UNITS.map((u) => (
-                  <option key={u} value={u}>
-                    {UNIT_LABEL[u]}
-                  </option>
-                ))}
-              </select>
+                {UNIT_LABEL[unit] ?? unit}
+              </p>
+              <p
+                id="stock-unit-hint"
+                className="text-xs text-foreground-secondary"
+              >
+                Fixée par l&apos;ingrédient
+              </p>
             </div>
           </div>
           <Field

@@ -14,8 +14,7 @@ import {
 } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
-
-const UNITS = Object.keys(UNIT_LABEL) as Unit[];
+import { ingredientUnits, usesSpoonEstimate } from "@/lib/units";
 
 interface IngredientRow {
   key: string;
@@ -116,6 +115,16 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
     setIngredientRows((rows) =>
       rows.map((row) => (row.key === key ? { ...row, ...patch } : row)),
     );
+  }
+
+  // Quand l'ingrédient change, l'unité suit : celle de la ligne doit rester
+  // compatible avec l'unité (définitive) du nouvel ingrédient.
+  function changeRowIngredient(key: string, ingredientId: string) {
+    const ingredient = catalogue?.find((i) => i.id === ingredientId);
+    updateIngredientRow(key, {
+      ingredientId,
+      ...(ingredient ? { unit: ingredient.defaultUnit } : {}),
+    });
   }
 
   function removeIngredientRow(key: string) {
@@ -346,76 +355,103 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
               .
             </p>
           )}
-          {ingredientRows.map((row) => (
-            <div key={row.key} className="flex flex-wrap items-end gap-2">
-              <div className="flex min-w-36 flex-1 flex-col gap-1.5">
-                <label htmlFor={`ing-${row.key}`} className="sr-only">
-                  Ingrédient
-                </label>
-                <select
-                  id={`ing-${row.key}`}
-                  value={row.ingredientId}
-                  onChange={(e) =>
-                    updateIngredientRow(row.key, {
-                      ingredientId: e.target.value,
-                    })
-                  }
-                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+          {ingredientRows.map((row) => {
+            const rowIngredient = catalogue?.find(
+              (i) => i.id === row.ingredientId,
+            );
+            const unitOptions = rowIngredient
+              ? ingredientUnits(rowIngredient)
+              : [row.unit];
+            // Ligne ancienne dont l'unité n'est plus compatible : on la montre
+            // pour que l'utilisateur la corrige, l'API refusera l'enregistrement.
+            const legacyUnit = !unitOptions.includes(row.unit);
+            return (
+              <div key={row.key} className="flex flex-wrap items-end gap-2">
+                <div className="flex min-w-36 flex-1 flex-col gap-1.5">
+                  <label htmlFor={`ing-${row.key}`} className="sr-only">
+                    Ingrédient
+                  </label>
+                  <select
+                    id={`ing-${row.key}`}
+                    value={row.ingredientId}
+                    onChange={(e) =>
+                      changeRowIngredient(row.key, e.target.value)
+                    }
+                    className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                  >
+                    {catalogue?.map((ing) => (
+                      <option key={ing.id} value={ing.id}>
+                        {ing.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex w-20 flex-col gap-1.5">
+                  <label htmlFor={`qty-${row.key}`} className="sr-only">
+                    Quantité
+                  </label>
+                  <input
+                    id={`qty-${row.key}`}
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={row.quantity}
+                    onChange={(e) =>
+                      updateIngredientRow(row.key, { quantity: e.target.value })
+                    }
+                    className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                  />
+                </div>
+                <div className="flex w-28 flex-col gap-1.5">
+                  <label htmlFor={`unit-${row.key}`} className="sr-only">
+                    Unité
+                  </label>
+                  <select
+                    id={`unit-${row.key}`}
+                    value={row.unit}
+                    onChange={(e) =>
+                      updateIngredientRow(row.key, {
+                        unit: e.target.value as Unit,
+                      })
+                    }
+                    disabled={unitOptions.length === 1 && !legacyUnit}
+                    className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
+                  >
+                    {legacyUnit && (
+                      <option value={row.unit}>
+                        {UNIT_LABEL[row.unit]} (à corriger)
+                      </option>
+                    )}
+                    {unitOptions.map((u) => (
+                      <option key={u} value={u}>
+                        {UNIT_LABEL[u]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => removeIngredientRow(row.key)}
+                  aria-label="Retirer cet ingrédient"
                 >
-                  {catalogue?.map((ing) => (
-                    <option key={ing.id} value={ing.id}>
-                      {ing.name}
-                    </option>
-                  ))}
-                </select>
+                  <span aria-hidden="true">✕</span>
+                </Button>
+                {rowIngredient &&
+                  usesSpoonEstimate(rowIngredient, row.unit) && (
+                    <p className="basis-full text-xs text-foreground-secondary">
+                      Cuillère estimée à 15 g (1 g = 1 ml). Pour être précis,
+                      renseigne le poids d&apos;une c. à soupe de «{" "}
+                      {rowIngredient.name} » dans{" "}
+                      <Link href="/recipes/ingredients" className="text-accent">
+                        le catalogue
+                      </Link>
+                      .
+                    </p>
+                  )}
               </div>
-              <div className="flex w-20 flex-col gap-1.5">
-                <label htmlFor={`qty-${row.key}`} className="sr-only">
-                  Quantité
-                </label>
-                <input
-                  id={`qty-${row.key}`}
-                  type="number"
-                  min={0}
-                  step="any"
-                  value={row.quantity}
-                  onChange={(e) =>
-                    updateIngredientRow(row.key, { quantity: e.target.value })
-                  }
-                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
-                />
-              </div>
-              <div className="flex w-28 flex-col gap-1.5">
-                <label htmlFor={`unit-${row.key}`} className="sr-only">
-                  Unité
-                </label>
-                <select
-                  id={`unit-${row.key}`}
-                  value={row.unit}
-                  onChange={(e) =>
-                    updateIngredientRow(row.key, {
-                      unit: e.target.value as Unit,
-                    })
-                  }
-                  className="w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground focus-visible:border-accent"
-                >
-                  {UNITS.map((u) => (
-                    <option key={u} value={u}>
-                      {UNIT_LABEL[u]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => removeIngredientRow(row.key)}
-                aria-label="Retirer cet ingrédient"
-              >
-                <span aria-hidden="true">✕</span>
-              </Button>
-            </div>
-          ))}
+            );
+          })}
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"

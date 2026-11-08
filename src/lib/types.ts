@@ -2,6 +2,7 @@ export type Unit =
   | "G"
   | "KG"
   | "ML"
+  | "CL"
   | "L"
   | "PIECE"
   | "CUILLERE_A_SOUPE"
@@ -32,6 +33,8 @@ export interface Ingredient {
   id: string;
   name: string;
   defaultUnit: Unit;
+  // Poids (g) d'une cuillère à soupe : relie poids et volume pour cet ingrédient.
+  gramsPerTablespoon?: number | null;
 }
 
 export interface RecipeIngredient {

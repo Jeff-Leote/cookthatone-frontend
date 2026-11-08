@@ -118,9 +118,21 @@ export const recipes = {
 
 export const ingredients = {
   list: () => request<Ingredient[]>("/ingredients"),
-  create: (data: { name: string; defaultUnit: Unit }) =>
+  create: (data: {
+    name: string;
+    defaultUnit: Unit;
+    gramsPerTablespoon?: number;
+  }) =>
     request<Ingredient>("/ingredients", {
       method: "POST",
+      body: JSON.stringify(data),
+    }),
+  update: (
+    id: string,
+    data: { defaultUnit?: Unit; gramsPerTablespoon?: number },
+  ) =>
+    request<Ingredient>(`/ingredients/${id}`, {
+      method: "PATCH",
       body: JSON.stringify(data),
     }),
   remove: (id: string) =>
