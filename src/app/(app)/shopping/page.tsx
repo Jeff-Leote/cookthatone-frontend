@@ -7,11 +7,35 @@ import { ApiError, shopping } from "@/lib/api";
 import {
   addMonths,
   formatMonthLabel,
+  formatWeekTitle,
   getMonthStart,
+  getWeekStart,
   monthOverlapsRange,
+  parseIsoDate,
+  toIsoDate,
 } from "@/lib/date";
 import { formatShoppingListTitle, UNIT_LABEL } from "@/lib/format";
 import type { ShoppingList } from "@/lib/types";
+
+interface WeekGroup {
+  key: string;
+  weekStart: Date;
+  lists: ShoppingList[];
+}
+
+// Une liste est rangée dans la semaine de sa date de début ; sa plage complète
+// reste affichée dans son titre si elle déborde sur la semaine suivante.
+function groupByWeek(lists: ShoppingList[]): WeekGroup[] {
+  const groups = new Map<string, WeekGroup>();
+  for (const list of lists) {
+    const weekStart = getWeekStart(parseIsoDate(list.periodStart));
+    const key = toIsoDate(weekStart);
+    const group = groups.get(key) ?? { key, weekStart, lists: [] };
+    group.lists.push(list);
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((a, b) => a.key.localeCompare(b.key));
+}
 
 export default function ShoppingPage() {
   const [monthDate, setMonthDate] = useState(() => getMonthStart(new Date()));
@@ -190,6 +214,9 @@ export default function ShoppingPage() {
     }
   }
 
+  const weekGroups = groupByWeek(lists ?? []);
+  const currentWeekKey = toIsoDate(getWeekStart(new Date()));
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -246,138 +273,161 @@ export default function ShoppingPage() {
         </div>
       )}
 
-      {lists?.map((list) => {
-        const busy = busyListId === list.id;
-        const checkedCount = list.items?.filter((i) => i.checked).length ?? 0;
-        const totalCount = list.items?.length ?? 0;
-
-        return (
-          <div
-            key={list.id}
-            className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5"
+      {weekGroups.map((group) => (
+        <section
+          key={group.key}
+          aria-labelledby={`week-${group.key}`}
+          className="flex flex-col gap-4"
+        >
+          <h2
+            id={`week-${group.key}`}
+            className="flex flex-wrap items-center gap-2 font-heading text-lg font-medium"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="font-medium">
-                  {formatShoppingListTitle(list.periodStart, list.periodEnd)}
-                </p>
-                <p className="text-sm text-foreground-secondary">
-                  {checkedCount}/{totalCount} articles cochés
-                </p>
+            {formatWeekTitle(group.weekStart)}
+            {group.key === currentWeekKey && (
+              <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
+                Cette semaine
+              </span>
+            )}
+          </h2>
+          {group.lists.map((list) => {
+            const busy = busyListId === list.id;
+            const checkedCount =
+              list.items?.filter((i) => i.checked).length ?? 0;
+            const totalCount = list.items?.length ?? 0;
+
+            return (
+              <div
+                key={list.id}
+                className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-medium">
+                      {formatShoppingListTitle(
+                        list.periodStart,
+                        list.periodEnd,
+                      )}
+                    </p>
+                    <p className="text-sm text-foreground-secondary">
+                      {checkedCount}/{totalCount} articles cochés
+                    </p>
+                    {!list.validated && totalCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleToggleAll(list, checkedCount < totalCount)
+                        }
+                        className="text-sm text-accent underline-offset-2 hover:underline"
+                      >
+                        {checkedCount < totalCount
+                          ? "Tout cocher"
+                          : "Tout décocher"}
+                      </button>
+                    )}
+                  </div>
+                  {!list.validated && (
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleRegenerate(list)}
+                        disabled={busy}
+                      >
+                        Régénérer
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => handleDelete(list)}
+                        aria-label="Supprimer cette liste"
+                      >
+                        <span aria-hidden="true">🗑️</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {list.validated && (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="flex items-center gap-1.5 text-sm text-success">
+                      <span aria-hidden="true">✓</span> Courses validées — le
+                      stock a été mis à jour.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handleUnvalidate(list)}
+                      disabled={busy}
+                    >
+                      {busy ? "Dévalidation…" : "Dévalider"}
+                    </Button>
+                  </div>
+                )}
+
+                {totalCount === 0 ? (
+                  <p className="text-sm text-foreground-secondary">
+                    Rien à acheter : le stock couvre déjà tous les besoins de
+                    cette période.
+                  </p>
+                ) : (
+                  <ul className="flex flex-col gap-1">
+                    {list.items?.map((item) => {
+                      const id = `shopping-item-${item.id}`;
+                      const missing = Math.max(
+                        0,
+                        item.quantityNeeded - item.quantityInStock,
+                      );
+                      return (
+                        <li
+                          key={item.id}
+                          className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-raised"
+                        >
+                          <input
+                            id={id}
+                            type="checkbox"
+                            checked={item.checked}
+                            disabled={list.validated}
+                            onChange={(e) =>
+                              handleToggle(list, item.id, e.target.checked)
+                            }
+                            className="h-4 w-4 accent-accent"
+                          />
+                          <label
+                            htmlFor={id}
+                            className={`flex-1 text-sm ${
+                              item.checked
+                                ? "text-foreground-secondary line-through"
+                                : "text-foreground"
+                            }`}
+                          >
+                            {item.ingredient?.name ?? "Ingrédient"}
+                          </label>
+                          <span className="text-sm text-foreground-secondary">
+                            {missing} {UNIT_LABEL[item.unit] ?? item.unit}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
                 {!list.validated && totalCount > 0 && (
-                  <button
+                  <Button
                     type="button"
-                    onClick={() =>
-                      handleToggleAll(list, checkedCount < totalCount)
-                    }
-                    className="text-sm text-accent underline-offset-2 hover:underline"
+                    onClick={() => handleValidate(list)}
+                    disabled={busy || checkedCount === 0}
+                    className="self-end"
                   >
-                    {checkedCount < totalCount
-                      ? "Tout cocher"
-                      : "Tout décocher"}
-                  </button>
+                    <span aria-hidden="true">✓</span>{" "}
+                    {busy ? "Validation…" : `Valider (${checkedCount})`}
+                  </Button>
                 )}
               </div>
-              {!list.validated && (
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => handleRegenerate(list)}
-                    disabled={busy}
-                  >
-                    Régénérer
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleDelete(list)}
-                    aria-label="Supprimer cette liste"
-                  >
-                    <span aria-hidden="true">🗑️</span>
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {list.validated && (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="flex items-center gap-1.5 text-sm text-success">
-                  <span aria-hidden="true">✓</span> Courses validées — le stock
-                  a été mis à jour.
-                </p>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => handleUnvalidate(list)}
-                  disabled={busy}
-                >
-                  {busy ? "Dévalidation…" : "Dévalider"}
-                </Button>
-              </div>
-            )}
-
-            {totalCount === 0 ? (
-              <p className="text-sm text-foreground-secondary">
-                Rien à acheter : le stock couvre déjà tous les besoins de cette
-                période.
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-1">
-                {list.items?.map((item) => {
-                  const id = `shopping-item-${item.id}`;
-                  const missing = Math.max(
-                    0,
-                    item.quantityNeeded - item.quantityInStock,
-                  );
-                  return (
-                    <li
-                      key={item.id}
-                      className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-raised"
-                    >
-                      <input
-                        id={id}
-                        type="checkbox"
-                        checked={item.checked}
-                        disabled={list.validated}
-                        onChange={(e) =>
-                          handleToggle(list, item.id, e.target.checked)
-                        }
-                        className="h-4 w-4 accent-accent"
-                      />
-                      <label
-                        htmlFor={id}
-                        className={`flex-1 text-sm ${
-                          item.checked
-                            ? "text-foreground-secondary line-through"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {item.ingredient?.name ?? "Ingrédient"}
-                      </label>
-                      <span className="text-sm text-foreground-secondary">
-                        {missing} {UNIT_LABEL[item.unit] ?? item.unit}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-
-            {!list.validated && totalCount > 0 && (
-              <Button
-                type="button"
-                onClick={() => handleValidate(list)}
-                disabled={busy || checkedCount === 0}
-                className="self-end"
-              >
-                <span aria-hidden="true">✓</span>{" "}
-                {busy ? "Validation…" : `Valider (${checkedCount})`}
-              </Button>
-            )}
-          </div>
-        );
-      })}
+            );
+          })}
+        </section>
+      ))}
 
       <GenerateShoppingListDialog
         open={generateOpen}
