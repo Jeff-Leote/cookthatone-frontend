@@ -51,8 +51,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return (await res.json()) as T;
 }
 
-// ---- auth -----------------------------------------------------------
-
 export const auth = {
   register: (data: { email: string; pseudo: string; password: string }) =>
     request<RegisterResponse>("/auth/register", {
@@ -67,16 +65,17 @@ export const auth = {
   me: () => request<User>("/auth/me"),
 };
 
-// ---- recipes ----------------------------------------------------------
-
 export const recipes = {
-  list: (params?: { search?: string; page?: number; limit?: number }) => {
+  list: (
+    params?: { search?: string; page?: number; limit?: number },
+    signal?: AbortSignal,
+  ) => {
     const qs = new URLSearchParams();
     if (params?.search) qs.set("search", params.search);
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
-    return request<Recipe[]>(`/recipes${suffix}`);
+    return request<Recipe[]>(`/recipes${suffix}`, { signal });
   },
   get: (id: string) => request<Recipe>(`/recipes/${id}`),
   create: (data: {
@@ -117,8 +116,6 @@ export const recipes = {
     }),
 };
 
-// ---- ingredients (catalogue) -------------------------------------------
-
 export const ingredients = {
   list: () => request<Ingredient[]>("/ingredients"),
   create: (data: { name: string; defaultUnit: Unit }) =>
@@ -129,8 +126,6 @@ export const ingredients = {
   remove: (id: string) =>
     request<void>(`/ingredients/${id}`, { method: "DELETE" }),
 };
-
-// ---- calendar -----------------------------------------------------------
 
 export const calendar = {
   week: (date?: string) => {
@@ -163,8 +158,6 @@ export const calendar = {
     request<void>(`/calendar/${id}`, { method: "DELETE" }),
 };
 
-// ---- stock --------------------------------------------------------------
-
 export const stock = {
   list: (expiringSoon?: boolean) =>
     request<StockItem[]>(`/stock${expiringSoon ? "?expiringSoon=true" : ""}`),
@@ -185,8 +178,6 @@ export const stock = {
     }),
   remove: (id: string) => request<void>(`/stock/${id}`, { method: "DELETE" }),
 };
-
-// ---- shopping -------------------------------------------------------------
 
 export const shopping = {
   list: () => request<ShoppingList[]>("/shopping"),
