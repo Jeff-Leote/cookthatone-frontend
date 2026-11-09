@@ -43,9 +43,11 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   const [servings, setServings] = useState("4");
   const [ingredientRows, setIngredientRows] = useState<IngredientRow[]>([]);
   const [stepRows, setStepRows] = useState<StepRow[]>([]);
-  const [originalIngredientIds, setOriginalIngredientIds] = useState<
-    Set<string>
-  >(new Set());
+  // Lignes telles qu'elles étaient à l'ouverture : permet de n'enregistrer que
+  // ce qui a changé (ajout, retrait, nouvelle quantité ou nouvelle unité).
+  const [originalRows, setOriginalRows] = useState<
+    Map<string, { quantity: number; unit: Unit }>
+  >(new Map());
 
   const [catalogue, setCatalogue] = useState<Ingredient[] | null>(null);
   const [loading, setLoading] = useState(isEdit);
@@ -80,7 +82,14 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
             unit: ri.unit,
           })) ?? [];
         setIngredientRows(rows);
-        setOriginalIngredientIds(new Set(rows.map((row) => row.ingredientId)));
+        setOriginalRows(
+          new Map(
+            rows.map((row) => [
+              row.ingredientId,
+              { quantity: Number(row.quantity), unit: row.unit },
+            ]),
+          ),
+        );
         setStepRows(
           [...(r.steps ?? [])]
             .sort((a, b) => a.stepOrder - b.stepOrder)
@@ -214,14 +223,28 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
         const currentIds = new Set(
           validIngredientRows.map((row) => row.ingredientId),
         );
-        const toRemove = [...originalIngredientIds].filter(
+        const toRemove = [...originalRows.keys()].filter(
           (id) => !currentIds.has(id),
         );
         const toAdd = validIngredientRows.filter(
-          (row) => !originalIngredientIds.has(row.ingredientId),
+          (row) => !originalRows.has(row.ingredientId),
         );
+        const toUpdate = validIngredientRows.filter((row) => {
+          const original = originalRows.get(row.ingredientId);
+          return (
+            original &&
+            (original.quantity !== Number(row.quantity) ||
+              original.unit !== row.unit)
+          );
+        });
         await Promise.all([
           ...toRemove.map((id) => recipesApi.removeIngredient(recipeId, id)),
+          ...toUpdate.map((row) =>
+            recipesApi.updateIngredient(recipeId, row.ingredientId, {
+              quantity: Number(row.quantity),
+              unit: row.unit,
+            }),
+          ),
           ...toAdd.map((row) =>
             recipesApi.addIngredient(recipeId, {
               ingredientId: row.ingredientId,

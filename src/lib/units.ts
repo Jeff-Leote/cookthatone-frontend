@@ -51,4 +51,4 @@ export function usesSpoonEstimate(
 // Poids d'une cuillère à soupe indicatifs : à vérifier par l'utilisateur,
 // jamais enregistrés sans sa validation.
 export const EQUIVALENCE_EXAMPLES =
-  "cuillère rase, farine ≈ 10 g, sucre ≈ 15 g, huile ≈ 14 g, eau et lait ≈ 15 g, miel ≈ 21 g";
+  "farine 10 g, sucre 15 g, huile 14 g, eau et lait 15 g, miel 21 g (cuillère rase, à vérifier)";

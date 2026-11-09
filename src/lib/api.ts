@@ -102,6 +102,15 @@ export const recipes = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  updateIngredient: (
+    id: string,
+    ingredientId: string,
+    data: { quantity?: number; unit?: Unit },
+  ) =>
+    request(`/recipes/${id}/ingredients/${ingredientId}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   removeIngredient: (id: string, ingredientId: string) =>
     request<void>(`/recipes/${id}/ingredients/${ingredientId}`, {
       method: "DELETE",

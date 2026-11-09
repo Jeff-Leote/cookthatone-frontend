@@ -226,12 +226,10 @@ export default function IngredientsPage() {
       </form>
 
       <p className="text-xs text-foreground-secondary">
-        Changer l&apos;unité d&apos;un ingrédient convertit son stock (g en kg,
-        ml en cl…). Le poids d&apos;une cuillère à soupe relie les grammes aux
-        cuillères pour cet ingrédient : le stock et la liste de courses en
-        tiennent compte. Sans lui, les cuillères sont estimées à 15 g et passer
-        des g aux ml est refusé tant que l&apos;ingrédient est utilisé. À titre
-        indicatif : {EQUIVALENCE_EXAMPLES}. Vérifie sur ton produit.
+        Changer l&apos;unité convertit le stock. Le poids d&apos;une cuillère à
+        soupe (colonne « g / c. à soupe ») permet de passer des grammes aux
+        cuillères et aux ml ; sans lui, une cuillère compte 15 g. Exemples :{" "}
+        {EQUIVALENCE_EXAMPLES}.
       </p>
 
       {items === null && !error && (
