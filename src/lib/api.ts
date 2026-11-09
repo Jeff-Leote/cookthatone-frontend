@@ -202,11 +202,18 @@ export const stock = {
 
 export const shopping = {
   list: () => request<ShoppingList[]>("/shopping"),
-  generate: (periodStart: string, periodEnd: string) =>
-    request<ShoppingList>("/shopping/generate", {
-      method: "POST",
-      body: JSON.stringify({ periodStart, periodEnd }),
-    }),
+  // Une période de plusieurs semaines donne une liste par semaine. Une réponse
+  // à liste unique (ancienne API) est acceptée aussi.
+  generate: async (periodStart: string, periodEnd: string) => {
+    const result = await request<ShoppingList[] | ShoppingList>(
+      "/shopping/generate",
+      {
+        method: "POST",
+        body: JSON.stringify({ periodStart, periodEnd }),
+      },
+    );
+    return Array.isArray(result) ? result : [result];
+  },
   get: (id: string) => request<ShoppingList>(`/shopping/${id}`),
   toggleItem: (id: string, itemId: string, checked: boolean) =>
     request<ShoppingItem>(`/shopping/${id}/items/${itemId}`, {
