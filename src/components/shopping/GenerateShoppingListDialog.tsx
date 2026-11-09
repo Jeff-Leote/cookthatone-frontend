@@ -10,7 +10,7 @@ import type { ShoppingList } from "@/lib/types";
 interface GenerateShoppingListDialogProps {
   open: boolean;
   defaultDate: Date;
-  onGenerated: (list: ShoppingList) => void;
+  onGenerated: (lists: ShoppingList[]) => void;
   onClose: () => void;
 }
 
@@ -51,8 +51,8 @@ export function GenerateShoppingListDialog({
     setBusy(true);
     setError(null);
     try {
-      const list = await shopping.generate(periodStart, periodEnd);
-      onGenerated(list);
+      const lists = await shopping.generate(periodStart, periodEnd);
+      onGenerated(lists);
       onClose();
     } catch (err) {
       setError(

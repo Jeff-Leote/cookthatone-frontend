@@ -90,21 +90,23 @@ export default function ShoppingPage() {
     }
   }
 
-  function handleGenerated(list: ShoppingList) {
+  function handleGenerated(generated: ShoppingList[]) {
     // La plage choisie peut tomber hors du mois actuellement affiché ;
-    // on bascule sur le mois de la nouvelle liste pour qu'elle soit visible.
-    goToMonth(getMonthStart(new Date(list.periodStart)));
+    // on bascule sur le mois de la première liste pour qu'elle soit visible.
+    goToMonth(getMonthStart(new Date(generated[0].periodStart)));
   }
 
   async function handleRegenerate(list: ShoppingList) {
     setBusyListId(list.id);
     setError(null);
     try {
-      const updated = await shopping.generate(
+      await shopping.generate(
         list.periodStart.slice(0, 10),
         list.periodEnd.slice(0, 10),
       );
-      setLists((prev) => prev?.map((l) => (l.id === list.id ? updated : l)));
+      // Une ancienne liste de plusieurs semaines est remplacée par une liste
+      // par semaine : on recharge pour afficher le résultat.
+      await refresh();
     } catch (err) {
       setError(
         err instanceof ApiError
