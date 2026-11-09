@@ -63,6 +63,26 @@ export const auth = {
       body: JSON.stringify(data),
     }),
   me: () => request<User>("/auth/me"),
+  forgotPassword: (data: { email: string }) =>
+    request<{ message: string }>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  resetPassword: (data: { token: string; newPassword: string }) =>
+    request<{ message: string }>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  resendVerification: (data: { email: string }) =>
+    request<{ message: string }>("/auth/resend-verification", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    request<{ message: string }>("/auth/change-password", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
 };
 
 export const recipes = {
