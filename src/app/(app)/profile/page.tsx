@@ -1,11 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ChangePasswordForm } from "@/components/auth/ChangePasswordForm";
 import { useAuth } from "@/lib/auth-context";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    document.title = "Mon profil · CookthatOne";
+  }, []);
 
   if (!user) return null;
 
@@ -58,6 +64,13 @@ export default function ProfilePage() {
             <span aria-hidden="true">↪</span> Se déconnecter
           </Button>
         </div>
+      </Card>
+
+      <Card className="max-w-md">
+        <h2 className="font-heading text-lg font-medium mb-5">
+          Changer le mot de passe
+        </h2>
+        <ChangePasswordForm />
       </Card>
     </div>
   );
