@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T00:00:00Z",
+  "title": "Design System: CookthatOne",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Encre Profonde",
+        "canonical": "oklch(5% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Ardoise Nuit",
+        "canonical": "oklch(10% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Ardoise Relevée",
+        "canonical": "oklch(13% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Blanc Page",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4",
+          "#f5f5f5",
+          "#ffffff"
+        ]
+      },
+      "foreground-secondary": {
+        "role": "neutral",
+        "displayName": "Gris Carnet",
+        "canonical": "oklch(68% 0 0)",
+        "tonalRamp": [
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4",
+          "#f5f5f5",
+          "#ffffff"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Trait de Page",
+        "canonical": "oklch(19% 0 0)",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Trait Fort",
+        "canonical": "oklch(28% 0 0)",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Lime Actif",
+        "canonical": "oklch(94% 0.24 125)",
+        "tonalRamp": [
+          "#2a4000",
+          "#4a7000",
+          "#6da000",
+          "#92cc1a",
+          "#b0e030",
+          "#c8ff3e",
+          "#d8ff70",
+          "#ecffa3"
+        ]
+      },
+      "accent-foreground": {
+        "role": "primary",
+        "displayName": "Encre sur Lime",
+        "canonical": "oklch(5% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Alerte",
+        "canonical": "oklch(72% 0.19 20)",
+        "tonalRamp": [
+          "#4a0000",
+          "#7f1d1d",
+          "#b91c1c",
+          "#dc2626",
+          "#ef4444",
+          "#f87171",
+          "#fca5a5",
+          "#fee2e2"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Succès",
+        "canonical": "oklch(74% 0.21 145)",
+        "tonalRamp": [
+          "#052e16",
+          "#14532d",
+          "#166534",
+          "#15803d",
+          "#16a34a",
+          "#4ade80",
+          "#86efac",
+          "#dcfce7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titre de page principal (h1). Un seul par écran."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titre de section, en-tête de dialog ou de card."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sous-titre, en-tête de groupe, label de navigation."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Contenu principal, descriptions, valeurs de liste."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Étiquettes de champs, colonnes de tableau, chips. Uppercase + tracking."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "transition-colors",
+        "value": "transition-colors 150ms ease",
+        "purpose": "Changements d'état sur boutons et liens (hover, focus, actif)."
+      },
+      {
+        "name": "reduced-state-only",
+        "value": "opacity, background-color, color, border-color, box-shadow 150ms ease",
+        "purpose": "Transitions autorisées en mode prefers-reduced-motion : visuelles uniquement, sans déplacement."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Bascule sidebar/bottom-nav, grille 1→7 colonnes du calendrier."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Mise en page deux colonnes sur les formulaires longs."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Conteneur max-w-5xl — pas de mise en page différente, juste plus d'air."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bouton Primary",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Action principale de la zone. Fond lime, texte quasi-noir. Un seul par zone d'action.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12l7 7 7-7\"/></svg> Enregistrer</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #c8ff3e; color: #0a0a0a; border: none; border-radius: 8px; padding: 12px 16px; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: filter 150ms ease; } .ds-btn-primary:hover { filter: brightness(0.95); } .ds-btn-primary:focus-visible { outline: 2px solid #c8ff3e; outline-offset: 2px; border-radius: 8px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Bouton Secondary",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Action secondaire. Fond surface-raised, bordure subtile.",
+      "html": "<button class=\"ds-btn-secondary\">Annuler</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #1a1a1a; color: #ffffff; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 16px; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: border-color 150ms ease; } .ds-btn-secondary:hover { border-color: #404040; } .ds-btn-secondary:focus-visible { outline: 2px solid #c8ff3e; outline-offset: 2px; } .ds-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Bouton Danger",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Action destructive. Bordure rouge, fond transparent. Uniquement dans les dialogs de confirmation.",
+      "html": "<button class=\"ds-btn-danger\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><polyline points=\"3 6 5 6 21 6\"/><path d=\"M19 6l-1 14H6L5 6\"/><path d=\"M10 11v6M14 11v6\"/><path d=\"M9 6V4h6v2\"/></svg> Supprimer</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: #f87171; border: 1px solid rgba(248,113,113,0.4); border-radius: 8px; padding: 12px 16px; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-danger:hover { background: rgba(248,113,113,0.1); } .ds-btn-danger:focus-visible { outline: 2px solid #c8ff3e; outline-offset: 2px; } .ds-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Bouton Ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Action tertiaire ou navigation retour. Transparent, texte secondaire.",
+      "html": "<button class=\"ds-btn-ghost\">Retour</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: #a3a3a3; border: none; border-radius: 8px; padding: 12px 16px; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: color 150ms ease; } .ds-btn-ghost:hover { color: #ffffff; } .ds-btn-ghost:focus-visible { outline: 2px solid #c8ff3e; outline-offset: 2px; } .ds-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Champ texte",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Champ de formulaire standard. Bordure subtile, fond surface, focus lime.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-input-ex\">Nom de l'ingrédient</label><input class=\"ds-input\" id=\"ds-input-ex\" type=\"text\" placeholder=\"ex. Farine de blé\"></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; } .ds-field-label { font-family: Inter, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: #a3a3a3; } .ds-input { background: #141414; color: #ffffff; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 14px; font-family: Inter, sans-serif; font-size: 0.875rem; outline: none; transition: border-color 150ms ease; } .ds-input::placeholder { color: rgba(163,163,163,0.6); } .ds-input:focus-visible { border-color: #c8ff3e; }"
+    },
+    {
+      "name": "Card / Conteneur",
+      "kind": "card",
+      "description": "Conteneur standard pour une unité d'information (recette, article de stock, semaine).",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-title\">Poulet rôti aux herbes</p><p class=\"ds-card-meta\">30 min · 4 portions</p></div>",
+      "css": ".ds-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; } .ds-card-title { font-family: Outfit, sans-serif; font-size: 1rem; font-weight: 500; color: #ffffff; margin: 0 0 4px; } .ds-card-meta { font-family: Inter, sans-serif; font-size: 0.875rem; color: #a3a3a3; margin: 0; }"
+    },
+    {
+      "name": "État vide",
+      "kind": "custom",
+      "description": "Toute liste ou page pouvant être vide affiche cet état : icône SVG centrée, description, CTA.",
+      "html": "<div class=\"ds-empty\"><svg class=\"ds-empty-icon\" width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h12.8M7 13l-1 5m10-5l1 5M9 20h.01M15 20h.01\"/></svg><p class=\"ds-empty-title\">Aucune recette pour l'instant</p><p class=\"ds-empty-desc\">Crée ta première recette pour démarrer ta planification.</p><a class=\"ds-btn-primary\" href=\"/recipes/new\">Créer une recette</a></div>",
+      "css": ".ds-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; border: 1px dashed #2a2a2a; border-radius: 12px; padding: 64px 24px; text-align: center; } .ds-empty-icon { color: #a3a3a3; } .ds-empty-title { font-family: Outfit, sans-serif; font-size: 1rem; font-weight: 500; color: #ffffff; margin: 0; } .ds-empty-desc { font-family: Inter, sans-serif; font-size: 0.875rem; color: #a3a3a3; margin: 0; max-width: 300px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le Carnet de Cuisinier",
+    "overview": "CookthatOne est un outil de cuisine, pas une vitrine. Son identité visuelle part d'un carnet de notes professionnel tenu dans le noir : pages sombres où seul l'essentiel tranche, accent lime réservé aux actions qui méritent l'attention, typographie structurée qui organise l'information sans l'habiller. L'interface s'efface derrière les données de l'utilisateur.\n\nLe système est sombre par choix fonctionnel. Un fond #0a0a0a et des surfaces #141414 / #1a1a1a créent une hiérarchie lisible sans avoir recours aux ombres. L'accent lime (#c8ff3e) fonctionne comme un marqueur fluo : il n'apparaît que sur les éléments actifs et les appels à l'action.\n\nLes composants sont épurés mais humains : coins arrondis modérés (8-12 px), corps en Inter, titres en Outfit. Aucune ombre portée, pas de dégradé, pas d'animation décorative.",
+    "keyCharacteristics": [
+      "Fond très sombre (quasi-noir), surfaces légèrement surélevées par la luminosité",
+      "Accent lime unique, réservé aux actions et aux indicateurs de focus",
+      "Zéro ombre portée : la profondeur est tonale, pas physique",
+      "Mobile-first, dense mais lisible, cibles 44 px minimum",
+      "Icônes SVG (Lucide React) uniquement, aucun emoji dans l'interface"
+    ],
+    "rules": [
+      {
+        "name": "La Règle du Marqueur",
+        "body": "Le lime n'apparaît que là où l'utilisateur peut agir ou doit regarder. Sur une page donnée, il occupe ≤10 % de la surface visible. Sa rareté est son signal.",
+        "section": "colors"
+      },
+      {
+        "name": "La Règle Sémantique",
+        "body": "Danger (#f87171) et succès (#4ade80) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.",
+        "section": "colors"
+      },
+      {
+        "name": "La Règle du Minimum",
+        "body": "Aucun texte en dessous de 12px dans l'interface, y compris les labels et les métadonnées.",
+        "section": "typography"
+      },
+      {
+        "name": "La Règle du Plat",
+        "body": "Toute tentation d'ajouter une box-shadow pour 'donner du relief' est un signal que la hiérarchie tonale est cassée — corriger les couleurs de surface plutôt qu'ajouter une ombre.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Règle du Rayon Cohérent",
+        "body": "Un bouton et le champ adjacent dans le même formulaire utilisent le même rounded-lg. Mélanger rounded-md et rounded-lg dans la même zone crée une incohérence perceptible.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do utiliser #c8ff3e uniquement pour les actions primaires et le focus — jamais pour la décoration ni les icônes passives.",
+      "Do maintenir au moins 44px de hauteur sur toutes les cibles tactiles (py-3 = 44px avec text-sm).",
+      "Do utiliser role=\"status\" pour les confirmations de succès et role=\"alert\" pour les erreurs.",
+      "Do afficher un état vide illustré (icône + texte + CTA) sur toute liste ou page pouvant être vide.",
+      "Do utiliser <dialog> natif avec showModal() pour toute modale ou confirmation de suppression."
+    ],
+    "donts": [
+      "Don't ajouter une box-shadow pour créer du relief — corriger la hiérarchie tonale.",
+      "Don't descendre en dessous de 12px pour le texte, même pour les métadonnées.",
+      "Don't utiliser des emoji dans l'interface — uniquement des icônes SVG Lucide React avec aria-hidden.",
+      "Don't mettre du texte lime (#c8ff3e) sur fond blanc ou surface claire — contraste insuffisant.",
+      "Don't utiliser window.confirm() — toujours ConfirmDialog avec description de ce qui sera perdu."
+    ]
+  }
+}
