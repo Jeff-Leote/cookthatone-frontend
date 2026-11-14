@@ -160,7 +160,7 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
           tabIndex={tab === "login" ? 0 : -1}
           onClick={() => switchTab("login")}
           onKeyDown={handleTabKeyDown}
-          className={`rounded-md py-2 text-sm font-medium transition-colors ${
+          className={`rounded-md py-3 text-sm font-medium transition-colors ${
             tab === "login"
               ? "bg-surface text-foreground"
               : "text-foreground-secondary"
@@ -177,7 +177,7 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
           tabIndex={tab === "register" ? 0 : -1}
           onClick={() => switchTab("register")}
           onKeyDown={handleTabKeyDown}
-          className={`rounded-md py-2 text-sm font-medium transition-colors ${
+          className={`rounded-md py-3 text-sm font-medium transition-colors ${
             tab === "register"
               ? "bg-surface text-foreground"
               : "text-foreground-secondary"

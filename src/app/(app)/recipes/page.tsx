@@ -37,13 +37,13 @@ export default function RecipesPage() {
         <div className="flex gap-2">
           <Link
             href="/recipes/ingredients"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-2 text-sm text-foreground hover:border-border-strong"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-3 text-sm text-foreground hover:border-border-strong"
           >
             <span aria-hidden="true">📦</span> Ingrédients
           </Link>
           <Link
             href="/recipes/new"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-accent-foreground hover:brightness-95"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-3 text-sm font-medium text-accent-foreground hover:brightness-95"
           >
             <span aria-hidden="true">+</span> Nouvelle recette
           </Link>
