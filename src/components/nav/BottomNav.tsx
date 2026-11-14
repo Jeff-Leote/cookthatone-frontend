@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { User } from "lucide-react";
 import { NAV_ITEMS } from "./nav-items";
 
 const MOBILE_ITEMS = [
@@ -10,7 +11,7 @@ const MOBILE_ITEMS = [
     if (i.label === "Liste de courses") return { ...i, label: "Courses" };
     return i;
   }),
-  { href: "/profile", label: "Profil", icon: "👤" },
+  { href: "/profile", label: "Profil", icon: User },
 ] as const;
 
 export function BottomNav() {
@@ -23,6 +24,7 @@ export function BottomNav() {
     >
       {MOBILE_ITEMS.map((item) => {
         const active = pathname.startsWith(item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
@@ -32,9 +34,7 @@ export function BottomNav() {
               active ? "text-accent" : "text-foreground-secondary"
             }`}
           >
-            <span aria-hidden="true" className="text-base">
-              {item.icon}
-            </span>
+            <Icon size={18} aria-hidden="true" />
             {item.label}
           </Link>
         );

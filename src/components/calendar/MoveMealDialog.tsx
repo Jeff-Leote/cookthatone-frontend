@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { X } from "lucide-react";
 import type { WeekDay } from "@/lib/date";
 import { MEAL_SLOT_LABEL } from "@/lib/format";
 import type { MealSlot } from "@/lib/types";
@@ -43,7 +44,7 @@ export function MoveMealDialog({
           aria-label="Fermer"
           className="rounded-md p-1 text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
       <div className="grid grid-cols-2 gap-1.5 p-4 sm:grid-cols-4">

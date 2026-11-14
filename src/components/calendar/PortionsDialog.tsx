@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type FormEvent } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { Recipe } from "@/lib/types";
@@ -57,7 +58,7 @@ export function PortionsDialog({
           aria-label="Fermer"
           className="rounded-md p-1 text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
 

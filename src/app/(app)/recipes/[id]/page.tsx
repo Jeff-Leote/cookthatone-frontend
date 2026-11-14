@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { recipes as recipesApi } from "@/lib/api";
@@ -83,7 +84,7 @@ export default function RecipeDetailPage() {
           href="/recipes"
           className="mb-4 inline-flex items-center gap-1.5 py-3 text-sm text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">←</span> Toutes les recettes
+          <ArrowLeft size={16} aria-hidden="true" /> Toutes les recettes
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -99,11 +100,11 @@ export default function RecipeDetailPage() {
           <div className="flex gap-2">
             <Link href={`/recipes/${recipe.id}/edit`}>
               <Button variant="secondary">
-                <span aria-hidden="true">✏️</span> Modifier
+                <Pencil size={16} aria-hidden="true" /> Modifier
               </Button>
             </Link>
             <Button variant="danger" onClick={handleDelete} disabled={deleting}>
-              <span aria-hidden="true">🗑️</span>{" "}
+              <Trash2 size={16} aria-hidden="true" />{" "}
               {deleting ? "Suppression…" : "Supprimer"}
             </Button>
           </div>

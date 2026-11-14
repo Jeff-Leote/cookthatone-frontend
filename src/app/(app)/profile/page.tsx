@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { User } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ChangePasswordForm } from "@/components/auth/ChangePasswordForm";
@@ -27,11 +28,8 @@ export default function ProfilePage() {
 
       <Card className="max-w-md !p-0">
         <div className="flex items-center gap-3 border-b border-border p-5">
-          <span
-            aria-hidden="true"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-lg text-accent"
-          >
-            👤
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <User size={20} aria-hidden="true" />
           </span>
           <div>
             <p className="font-medium">{user.pseudo}</p>
@@ -61,7 +59,7 @@ export default function ProfilePage() {
             onClick={logout}
             className="w-full justify-center"
           >
-            <span aria-hidden="true">↪</span> Se déconnecter
+            Se déconnecter
           </Button>
         </div>
       </Card>

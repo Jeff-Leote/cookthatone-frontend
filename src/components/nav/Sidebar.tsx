@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChefHat } from "lucide-react";
 import { NAV_ITEMS } from "./nav-items";
 import { useAuth } from "@/lib/auth-context";
 
@@ -16,11 +17,12 @@ export function Sidebar() {
     >
       <div>
         <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
-          <span
-            aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent"
-          >
-            🧑‍🍳
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
+            <ChefHat
+              size={18}
+              aria-hidden="true"
+              className="text-accent-foreground"
+            />
           </span>
           <span className="font-heading text-base font-medium">
             Cook<span className="text-accent">that</span>One
@@ -29,6 +31,7 @@ export function Sidebar() {
         <ul className="flex flex-col gap-1">
           {NAV_ITEMS.map((item) => {
             const active = pathname.startsWith(item.href);
+            const Icon = item.icon;
             return (
               <li key={item.href}>
                 <Link
@@ -40,7 +43,7 @@ export function Sidebar() {
                       : "text-foreground-secondary hover:bg-surface-raised hover:text-foreground"
                   }`}
                 >
-                  <span aria-hidden="true">{item.icon}</span>
+                  <Icon size={18} aria-hidden="true" />
                   {item.label}
                 </Link>
               </li>

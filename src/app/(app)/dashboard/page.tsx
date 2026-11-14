@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { calendar, shopping, stock } from "@/lib/api";
 import { toIsoDate } from "@/lib/date";
@@ -109,7 +110,7 @@ export default function DashboardPage() {
                     href="/calendar"
                     className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-3 text-sm text-foreground hover:border-border-strong"
                   >
-                    <span aria-hidden="true">+</span> Planifier
+                    <Plus size={16} aria-hidden="true" /> Planifier
                   </Link>
                 </Card>
               );

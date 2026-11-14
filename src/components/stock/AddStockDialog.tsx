@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { UNIT_LABEL } from "@/lib/format";
@@ -69,7 +70,7 @@ export function AddStockDialog({
           aria-label="Fermer"
           className="rounded-md p-1 text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
 

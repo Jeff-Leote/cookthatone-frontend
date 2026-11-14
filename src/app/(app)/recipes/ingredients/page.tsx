@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ApiError, ingredients as ingredientsApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
@@ -153,7 +154,7 @@ export default function IngredientsPage() {
           href="/recipes"
           className="mb-4 inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">←</span> Recettes
+          <ArrowLeft size={16} aria-hidden="true" /> Recettes
         </Link>
         <h1 className="font-heading text-2xl font-medium">
           Catalogue d&apos;ingrédients
@@ -221,7 +222,7 @@ export default function IngredientsPage() {
           />
         </div>
         <Button type="submit" disabled={submitting || !name.trim()}>
-          <span aria-hidden="true">+</span> Ajouter
+          <Plus size={16} aria-hidden="true" /> Ajouter
         </Button>
       </form>
 
@@ -328,7 +329,7 @@ export default function IngredientsPage() {
                     disabled={removingId === ingredient.id}
                     aria-label={`Retirer ${ingredient.name} du catalogue`}
                   >
-                    <span aria-hidden="true">🗑️</span>
+                    <Trash2 size={16} aria-hidden="true" />
                   </Button>
                 </td>
               </tr>

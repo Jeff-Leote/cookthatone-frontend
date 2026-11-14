@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Clock, Utensils, Users } from "lucide-react";
 import type { Recipe } from "@/lib/types";
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
@@ -10,11 +11,8 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       href={`/recipes/${recipe.id}`}
       className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 hover:border-border-strong"
     >
-      <span
-        aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent"
-      >
-        🍴
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
+        <Utensils size={18} aria-hidden="true" />
       </span>
       <div>
         <h3 className="font-medium">{recipe.title}</h3>
@@ -27,12 +25,12 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       <div className="mt-auto flex items-center gap-4 border-t border-border pt-3 text-xs text-foreground-secondary">
         {totalTime !== null && (
           <span className="flex items-center gap-1">
-            <span aria-hidden="true">🕐</span>
+            <Clock size={12} aria-hidden="true" />
             {totalTime} min
           </span>
         )}
         <span className="flex items-center gap-1">
-          <span aria-hidden="true">👥</span>
+          <Users size={12} aria-hidden="true" />
           {recipe.servings} pers.
         </span>
       </div>

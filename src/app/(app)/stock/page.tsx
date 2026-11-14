@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertTriangle, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { AddStockDialog } from "@/components/stock/AddStockDialog";
 import {
@@ -132,7 +133,7 @@ export default function StockPage() {
         <div className="flex items-center gap-2">
           {expiringCount > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-foreground-secondary">
-              <span aria-hidden="true">⚠️</span>
+              <AlertTriangle size={16} aria-hidden="true" />
               Bientôt périmés {expiringCount}
             </span>
           )}
@@ -142,12 +143,12 @@ export default function StockPage() {
               variant="secondary"
               onClick={handleRemoveSelected}
             >
-              <span aria-hidden="true">🗑️</span> Supprimer la sélection (
+              <Trash2 size={16} aria-hidden="true" /> Supprimer la sélection (
               {selected.size})
             </Button>
           )}
           <Button type="button" onClick={() => setAddOpen(true)}>
-            <span aria-hidden="true">+</span> Ajouter
+            <Plus size={16} aria-hidden="true" /> Ajouter
           </Button>
         </div>
       </div>
@@ -294,7 +295,7 @@ export default function StockPage() {
                         onClick={() => handleRemove(item)}
                         aria-label={`Retirer ${name} du stock`}
                       >
-                        <span aria-hidden="true">🗑️</span>
+                        <Trash2 size={16} aria-hidden="true" />
                       </Button>
                     </td>
                   </tr>
