@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, Package, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ApiError, ingredients as ingredientsApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
 import { EQUIVALENCE_EXAMPLES } from "@/lib/units";
+import { useSlowRequest } from "@/lib/useSlowRequest";
 
 const UNITS = Object.keys(UNIT_LABEL) as Unit[];
 
@@ -31,8 +32,17 @@ export default function IngredientsPage() {
   const [equivalence, setEquivalence] = useState("");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSlow = useSlowRequest(submitting);
+
+  useEffect(() => {
+    return () => {
+      if (successTimer.current) clearTimeout(successTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     ingredientsApi
@@ -60,6 +70,9 @@ export default function IngredientsPage() {
       setItems((current) => [...(current ?? []), created]);
       setName("");
       setEquivalence("");
+      setSuccessMsg(`« ${created.name} » ajouté.`);
+      if (successTimer.current) clearTimeout(successTimer.current);
+      successTimer.current = setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Une erreur est survenue.",
@@ -222,9 +235,25 @@ export default function IngredientsPage() {
           />
         </div>
         <Button type="submit" disabled={submitting || !name.trim()}>
-          <Plus size={16} aria-hidden="true" /> Ajouter
+          <Plus size={16} aria-hidden="true" />{" "}
+          {submitting ? "Ajout…" : "Ajouter"}
         </Button>
       </form>
+      {!name.trim() && !submitting && (
+        <p className="text-xs text-foreground-secondary">
+          Saisis un nom pour ajouter un ingrédient.
+        </p>
+      )}
+      {isSlow && (
+        <p role="status" className="text-xs text-foreground-secondary">
+          Le serveur se réveille, encore quelques secondes…
+        </p>
+      )}
+      {successMsg && (
+        <p role="status" className="text-sm text-success">
+          {successMsg}
+        </p>
+      )}
 
       <p className="text-xs text-foreground-secondary">
         Changer l&apos;unité convertit le stock. Le poids d&apos;une cuillère à

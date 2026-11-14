@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { Recipe } from "@/lib/types";
+import { useSlowRequest } from "@/lib/useSlowRequest";
 
 interface PortionsDialogProps {
   open: boolean;
   recipe: Recipe | null;
-  onConfirm: (servings: number) => void;
+  onConfirm: (servings: number) => Promise<void>;
   onClose: () => void;
 }
 
@@ -26,6 +27,8 @@ export function PortionsDialog({
   onClose,
 }: PortionsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const isSlow = useSlowRequest(submitting);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -34,12 +37,17 @@ export function PortionsDialog({
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const servings = Number(data.get("servings"));
     if (!(servings > 0)) return;
-    onConfirm(servings);
+    setSubmitting(true);
+    try {
+      await onConfirm(servings);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -78,8 +86,13 @@ export function PortionsDialog({
             defaultValue={recipe.servings}
             required
           />
-          <Button type="submit" className="mt-1">
-            Confirmer
+          {isSlow && (
+            <p role="status" className="text-xs text-foreground-secondary">
+              Le serveur se réveille, encore quelques secondes…
+            </p>
+          )}
+          <Button type="submit" className="mt-1" disabled={submitting}>
+            {submitting ? "Confirmation…" : "Confirmer"}
           </Button>
         </form>
       )}
