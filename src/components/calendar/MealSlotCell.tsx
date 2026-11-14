@@ -32,10 +32,11 @@ export function MealSlotCell({
           type="button"
           variant="ghost"
           onClick={onPlan}
-          className="flex-1 justify-center text-xs"
+          className="flex-1 flex-col gap-1 justify-center text-xs text-foreground-secondary"
           aria-label={`Planifier un repas — ${context}`}
         >
-          <Plus size={14} aria-hidden="true" /> Planifier
+          <Plus size={16} aria-hidden="true" />
+          Planifier
         </Button>
       </div>
     );
@@ -48,16 +49,18 @@ export function MealSlotCell({
     <div
       className={`flex min-h-24 flex-col gap-1.5 rounded-lg border p-2.5 text-xs ${
         entry.done
-          ? "border-success/40 bg-success/5"
+          ? "border-success/30 bg-success/8"
           : "border-border bg-surface"
       }`}
     >
-      <p className="font-medium">{title}</p>
+      <p className={`font-medium ${entry.done ? "text-foreground" : ""}`}>
+        {title}
+      </p>
       <p className="text-foreground-secondary">
         {entry.servings} portion{entry.servings > 1 ? "s" : ""}
       </p>
       {entry.done && (
-        <p className="flex items-center gap-1 text-success">
+        <p className="flex items-center gap-1 font-medium text-success">
           <Check size={12} aria-hidden="true" />
           {actualTitle && actualTitle !== title
             ? `Réalisé : ${actualTitle}`

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertTriangle, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Package, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { AddStockDialog } from "@/components/stock/AddStockDialog";
 import {
@@ -169,9 +169,21 @@ export default function StockPage() {
       )}
 
       {items !== null && items.length === 0 && (
-        <p className="text-sm text-foreground-secondary">
-          Rien en stock pour l&apos;instant.
-        </p>
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
+          <Package
+            className="size-10 text-foreground-secondary"
+            aria-hidden="true"
+          />
+          <div>
+            <p className="font-medium">Aucun article en stock</p>
+            <p className="mt-1 text-sm text-foreground-secondary">
+              Ajoute tes premiers articles pour suivre tes stocks.
+            </p>
+          </div>
+          <Button type="button" onClick={() => setAddOpen(true)}>
+            <Plus size={16} aria-hidden="true" /> Ajouter un article
+          </Button>
+        </div>
       )}
 
       {items !== null && items.length > 0 && (

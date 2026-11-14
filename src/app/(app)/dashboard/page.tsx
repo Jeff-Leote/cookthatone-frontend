@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { CalendarDays, Package, Plus, ShoppingCart } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { calendar, shopping, stock } from "@/lib/api";
 import { toIsoDate } from "@/lib/date";
@@ -67,10 +67,55 @@ export default function DashboardPage() {
 
   const slots: Array<"MIDI" | "SOIR"> = ["MIDI", "SOIR"];
 
+  const isLoaded =
+    todayEntries !== null && expiringCount !== null && activeList !== undefined;
+  const hasNoRepas = todayEntries !== null && todayEntries.length === 0;
+  const hasNoStock = expiringCount === 0;
+  const hasNoList = activeList === null;
+  const isFullyEmpty =
+    isLoaded &&
+    hasNoRepas &&
+    hasNoStock &&
+    hasNoList &&
+    !calendarError &&
+    !stockError &&
+    !shoppingError;
+
   return (
     <div className="flex flex-col gap-8">
       {/* En-tête */}
       <p className="font-heading text-2xl font-medium">{formatLongDate()}</p>
+
+      {/* État d'accueil quand tout est vide */}
+      {isFullyEmpty && (
+        <div className="flex flex-col gap-3 rounded-xl border border-dashed border-border p-6">
+          <p className="font-medium">Par où commencer ?</p>
+          <p className="text-sm text-foreground-secondary">
+            Pour bien démarrer, planifie un repas, vérifie ton stock ou génère
+            une liste de courses.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Link
+              href="/calendar"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-3 text-sm text-foreground hover:border-border-strong"
+            >
+              <CalendarDays size={16} aria-hidden="true" /> Planifier un repas
+            </Link>
+            <Link
+              href="/stock"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-3 text-sm text-foreground hover:border-border-strong"
+            >
+              <Package size={16} aria-hidden="true" /> Gérer le stock
+            </Link>
+            <Link
+              href="/shopping"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-3 text-sm text-foreground hover:border-border-strong"
+            >
+              <ShoppingCart size={16} aria-hidden="true" /> Générer une liste
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Repas du jour */}
       <section aria-labelledby="heading-repas">
@@ -103,9 +148,13 @@ export default function DashboardPage() {
                   <p className="text-xs font-medium uppercase tracking-wide text-foreground-secondary">
                     {MEAL_SLOT_LABEL[slot]}
                   </p>
-                  <p className="mt-2 mb-4 text-sm">
-                    {entry?.recipe?.title ?? "Aucun repas planifié"}
-                  </p>
+                  {entry?.recipe?.title ? (
+                    <p className="mt-2 mb-4 text-sm">{entry.recipe.title}</p>
+                  ) : (
+                    <p className="mt-2 mb-4 text-sm text-foreground-secondary">
+                      Aucun repas planifié
+                    </p>
+                  )}
                   <Link
                     href="/calendar"
                     className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-3 text-sm text-foreground hover:border-border-strong"
@@ -152,6 +201,19 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {/* Invitation discrète vers le stock quand rien n'expire */}
+      {!stockError && expiringCount === 0 && !isFullyEmpty && (
+        <p className="text-sm text-foreground-secondary">
+          Rien n&apos;arrive à expiration.{" "}
+          <Link
+            href="/stock"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            Consulter le stock
+          </Link>
+        </p>
+      )}
+
       {/* Liste de courses en cours — visible uniquement si activeList existe */}
       {shoppingError && (
         <p
@@ -189,6 +251,19 @@ export default function DashboardPage() {
             </Link>
           </Card>
         </section>
+      )}
+
+      {/* Invitation discrète vers les courses quand aucune liste active */}
+      {!shoppingError && activeList === null && !isFullyEmpty && (
+        <p className="text-sm text-foreground-secondary">
+          Pas de liste de courses en cours.{" "}
+          <Link
+            href="/shopping"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            Générer une liste
+          </Link>
+        </p>
       )}
     </div>
   );

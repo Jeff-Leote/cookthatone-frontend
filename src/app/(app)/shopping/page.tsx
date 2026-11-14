@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GenerateShoppingListDialog } from "@/components/shopping/GenerateShoppingListDialog";
 import { ApiError, shopping } from "@/lib/api";
@@ -266,12 +266,21 @@ export default function ShoppingPage() {
       )}
 
       {lists?.length === 0 && (
-        <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-6">
-          <p className="text-sm text-foreground-secondary">
-            Aucune liste de courses pour {formatMonthLabel(monthDate)}.
-          </p>
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
+          <ShoppingCart
+            className="size-10 text-foreground-secondary"
+            aria-hidden="true"
+          />
+          <div>
+            <p className="font-medium">
+              Aucune liste pour {formatMonthLabel(monthDate)}
+            </p>
+            <p className="mt-1 text-sm text-foreground-secondary">
+              Génère une liste à partir de ton calendrier de repas.
+            </p>
+          </div>
           <Button type="button" onClick={() => setGenerateOpen(true)}>
-            Générer une liste de courses
+            <Plus size={16} aria-hidden="true" /> Générer une liste de courses
           </Button>
         </div>
       )}
