@@ -10,7 +10,7 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
 
   useEffect(() => {
-    document.title = "Mon profil · CookthatOne";
+    document.title = "Profil · CookthatOne";
   }, []);
 
   if (!user) return null;
