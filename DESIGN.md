@@ -97,6 +97,7 @@ Le système est sombre par choix fonctionnel, pas par tendance. Un fond #0a0a0a 
 Les composants sont épurés mais humains : coins arrondis modérés (8-12 px), corps en Inter pour la lisibilité dense, titres en Outfit pour signaler la structure. Aucune ombre portée, pas de dégradé, pas d'animation décorative — uniquement des retours d'état brefs sur les éléments interactifs.
 
 **Key Characteristics:**
+
 - Fond très sombre (quasi-noir), surfaces légèrement surélevées par la luminosité
 - Accent lime unique, réservé aux actions et aux indicateurs de focus
 - Zéro ombre portée : la profondeur est tonale, pas physique
@@ -108,9 +109,11 @@ Les composants sont épurés mais humains : coins arrondis modérés (8-12 px), 
 Palette monochrome foncée à accent unique : le lime #c8ff3e est le seul chroma de tout le système.
 
 ### Primary
+
 - **Lime Actif** (#c8ff3e) : accent exclusif. Bouton principal, anneau de focus (16,81:1 de contraste sur fond), indicateurs d'état actif. Ne pas diluer avec `opacity` sauf pour les états désactivés.
 
 ### Neutral
+
 - **Encre Profonde** (#0a0a0a) : couleur de fond `body` et arrière-plan page. Quasi-noir pur.
 - **Ardoise Nuit** (#141414) : surface des cartes, panneaux et dialogs.
 - **Ardoise Relevée** (#1a1a1a) : surface surélevée — champs en mode non-focus, éléments passifs dans une card.
@@ -120,10 +123,12 @@ Palette monochrome foncée à accent unique : le lime #c8ff3e est le seul chroma
 - **Trait Fort** (#404040) : bordure hover sur les champs et les éléments interactifs.
 
 ### Semantic
+
 - **Alerte** (#f87171) : erreurs de validation, messages destructifs, bouton danger. Jamais pour de la décoration.
 - **Succès** (#4ade80) : confirmation d'action réussie (`role="status"`), validation de repas.
 
 ### Named Rules
+
 **La Règle du Marqueur.** Le lime n'apparaît que là où l'utilisateur peut agir ou doit regarder. Sur une page donnée, il occupe ≤10 % de la surface visible. Sa rareté est son signal.
 
 **La Règle Sémantique.** Danger (#f87171) et succès (#4ade80) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.
@@ -136,6 +141,7 @@ Palette monochrome foncée à accent unique : le lime #c8ff3e est le seul chroma
 **Caractère :** Outfit apporte une structure géométrique légèrement expressive pour signaler la hiérarchie ; Inter garantit une lisibilité maximale dans les listes denses et les formulaires. L'accord joue la complémentarité structurée plutôt que le contraste de style.
 
 ### Hierarchy
+
 - **Display** (Outfit, 500, 1.5rem/24px, lh 1.2) : titre de page principal (`<h1>`). Un seul par écran.
 - **Headline** (Outfit, 500, 1.25rem/20px, lh 1.3) : titre de section, en-tête de dialog ou de card.
 - **Title** (Outfit, 500, 1rem/16px, lh 1.4) : sous-titre, en-tête de groupe, label de navigation.
@@ -143,6 +149,7 @@ Palette monochrome foncée à accent unique : le lime #c8ff3e est le seul chroma
 - **Label** (Inter, 500, 0.75rem/12px, lh 1.4, lettre-spacing 0.05em, uppercase) : étiquettes de champs, colonnes de tableau, chips de navigation.
 
 ### Named Rules
+
 **La Règle du Minimum.** Aucun texte en dessous de 12px (0.75rem) dans l'interface, y compris les labels et les métadonnées. Contraste WCAG AA minimum sur toutes les surfaces.
 
 ## Layout
@@ -162,6 +169,7 @@ Le système est **plat par principe**. Aucune ombre portée (`box-shadow`) n'est
 Les bordures (`#2a2a2a` → `#404040` au hover/focus) remplacent les ombres pour délimiter les zones interactives. L'anneau de focus (`2px solid #c8ff3e`) est la seule élévation visuelle explicite.
 
 ### Named Rules
+
 **La Règle du Plat.** Toute tentation d'ajouter une `box-shadow` pour "donner du relief" est un signal que la hiérarchie tonale est cassée — corriger les couleurs de surface plutôt qu'ajouter une ombre.
 
 ## Shapes
@@ -213,6 +221,7 @@ Composant `<dialog>` natif (`showModal()`). Fond `surface` (`#141414`), bordure 
 ## Do's and Don'ts
 
 ### Do:
+
 - **Do** utiliser `#c8ff3e` uniquement pour les actions primaires et le focus — jamais pour la décoration ni les icônes passives.
 - **Do** maintenir au moins 44px de hauteur sur toutes les cibles tactiles (`py-3` = 44px avec `text-sm`).
 - **Do** utiliser `role="status"` pour les confirmations de succès et `role="alert"` pour les erreurs — les deux sont distincts.
@@ -220,6 +229,7 @@ Composant `<dialog>` natif (`showModal()`). Fond `surface` (`#141414`), bordure 
 - **Do** utiliser `<dialog>` natif avec `showModal()` pour toute modale ou confirmation de suppression.
 
 ### Don't:
+
 - **Don't** ajouter une `box-shadow` pour créer du relief — corriger la hiérarchie tonale (fond/surface/surface-raised).
 - **Don't** descendre en dessous de 12px pour le texte, même pour les métadonnées ou les labels de tableau.
 - **Don't** utiliser des emoji dans l'interface — uniquement des icônes SVG Lucide React avec `aria-hidden="true"`.

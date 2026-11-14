@@ -4,34 +4,223 @@
   "title": "Design System: CookthatOne",
   "extensions": {
     "colorMeta": {
-      "background":          { "role": "neutral",  "displayName": "Encre Profonde",    "canonical": "oklch(5% 0 0)",     "tonalRamp": ["#050505","#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3"] },
-      "surface":             { "role": "neutral",  "displayName": "Ardoise Nuit",      "canonical": "oklch(10% 0 0)",    "tonalRamp": ["#050505","#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3"] },
-      "surface-raised":      { "role": "neutral",  "displayName": "Ardoise Relevée",   "canonical": "oklch(13% 0 0)",    "tonalRamp": ["#050505","#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3"] },
-      "foreground":          { "role": "neutral",  "displayName": "Blanc Page",        "canonical": "oklch(100% 0 0)",   "tonalRamp": ["#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3","#d4d4d4","#f5f5f5","#ffffff"] },
-      "foreground-secondary":{ "role": "neutral",  "displayName": "Gris Carnet",       "canonical": "oklch(68% 0 0)",    "tonalRamp": ["#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3","#d4d4d4","#f5f5f5","#ffffff"] },
-      "border":              { "role": "neutral",  "displayName": "Trait de Page",     "canonical": "oklch(19% 0 0)",    "tonalRamp": ["#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3","#d4d4d4"] },
-      "border-strong":       { "role": "neutral",  "displayName": "Trait Fort",        "canonical": "oklch(28% 0 0)",    "tonalRamp": ["#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3","#d4d4d4"] },
-      "accent":              { "role": "primary",  "displayName": "Lime Actif",        "canonical": "oklch(94% 0.24 125)", "tonalRamp": ["#2a4000","#4a7000","#6da000","#92cc1a","#b0e030","#c8ff3e","#d8ff70","#ecffa3"] },
-      "accent-foreground":   { "role": "primary",  "displayName": "Encre sur Lime",    "canonical": "oklch(5% 0 0)",     "tonalRamp": ["#050505","#0a0a0a","#141414","#1a1a1a","#2a2a2a","#404040","#737373","#a3a3a3"] },
-      "danger":              { "role": "semantic", "displayName": "Alerte",            "canonical": "oklch(72% 0.19 20)",  "tonalRamp": ["#4a0000","#7f1d1d","#b91c1c","#dc2626","#ef4444","#f87171","#fca5a5","#fee2e2"] },
-      "success":             { "role": "semantic", "displayName": "Succès",            "canonical": "oklch(74% 0.21 145)", "tonalRamp": ["#052e16","#14532d","#166534","#15803d","#16a34a","#4ade80","#86efac","#dcfce7"] }
+      "background": {
+        "role": "neutral",
+        "displayName": "Encre Profonde",
+        "canonical": "oklch(5% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Ardoise Nuit",
+        "canonical": "oklch(10% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Ardoise Relevée",
+        "canonical": "oklch(13% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Blanc Page",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4",
+          "#f5f5f5",
+          "#ffffff"
+        ]
+      },
+      "foreground-secondary": {
+        "role": "neutral",
+        "displayName": "Gris Carnet",
+        "canonical": "oklch(68% 0 0)",
+        "tonalRamp": [
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4",
+          "#f5f5f5",
+          "#ffffff"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Trait de Page",
+        "canonical": "oklch(19% 0 0)",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Trait Fort",
+        "canonical": "oklch(28% 0 0)",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3",
+          "#d4d4d4"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Lime Actif",
+        "canonical": "oklch(94% 0.24 125)",
+        "tonalRamp": [
+          "#2a4000",
+          "#4a7000",
+          "#6da000",
+          "#92cc1a",
+          "#b0e030",
+          "#c8ff3e",
+          "#d8ff70",
+          "#ecffa3"
+        ]
+      },
+      "accent-foreground": {
+        "role": "primary",
+        "displayName": "Encre sur Lime",
+        "canonical": "oklch(5% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0a0a0a",
+          "#141414",
+          "#1a1a1a",
+          "#2a2a2a",
+          "#404040",
+          "#737373",
+          "#a3a3a3"
+        ]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Alerte",
+        "canonical": "oklch(72% 0.19 20)",
+        "tonalRamp": [
+          "#4a0000",
+          "#7f1d1d",
+          "#b91c1c",
+          "#dc2626",
+          "#ef4444",
+          "#f87171",
+          "#fca5a5",
+          "#fee2e2"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Succès",
+        "canonical": "oklch(74% 0.21 145)",
+        "tonalRamp": [
+          "#052e16",
+          "#14532d",
+          "#166534",
+          "#15803d",
+          "#16a34a",
+          "#4ade80",
+          "#86efac",
+          "#dcfce7"
+        ]
+      }
     },
     "typographyMeta": {
-      "display":  { "displayName": "Display",  "purpose": "Titre de page principal (h1). Un seul par écran." },
-      "headline": { "displayName": "Headline", "purpose": "Titre de section, en-tête de dialog ou de card." },
-      "title":    { "displayName": "Title",    "purpose": "Sous-titre, en-tête de groupe, label de navigation." },
-      "body":     { "displayName": "Body",     "purpose": "Contenu principal, descriptions, valeurs de liste." },
-      "label":    { "displayName": "Label",    "purpose": "Étiquettes de champs, colonnes de tableau, chips. Uppercase + tracking." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titre de page principal (h1). Un seul par écran."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titre de section, en-tête de dialog ou de card."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sous-titre, en-tête de groupe, label de navigation."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Contenu principal, descriptions, valeurs de liste."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Étiquettes de champs, colonnes de tableau, chips. Uppercase + tracking."
+      }
     },
     "shadows": [],
     "motion": [
-      { "name": "transition-colors",  "value": "transition-colors 150ms ease", "purpose": "Changements d'état sur boutons et liens (hover, focus, actif)." },
-      { "name": "reduced-state-only", "value": "opacity, background-color, color, border-color, box-shadow 150ms ease", "purpose": "Transitions autorisées en mode prefers-reduced-motion : visuelles uniquement, sans déplacement." }
+      {
+        "name": "transition-colors",
+        "value": "transition-colors 150ms ease",
+        "purpose": "Changements d'état sur boutons et liens (hover, focus, actif)."
+      },
+      {
+        "name": "reduced-state-only",
+        "value": "opacity, background-color, color, border-color, box-shadow 150ms ease",
+        "purpose": "Transitions autorisées en mode prefers-reduced-motion : visuelles uniquement, sans déplacement."
+      }
     ],
     "breakpoints": [
-      { "name": "sm",  "value": "640px",  "purpose": "Bascule sidebar/bottom-nav, grille 1→7 colonnes du calendrier." },
-      { "name": "md",  "value": "768px",  "purpose": "Mise en page deux colonnes sur les formulaires longs." },
-      { "name": "lg",  "value": "1024px", "purpose": "Conteneur max-w-5xl — pas de mise en page différente, juste plus d'air." }
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Bascule sidebar/bottom-nav, grille 1→7 colonnes du calendrier."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Mise en page deux colonnes sur les formulaires longs."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Conteneur max-w-5xl — pas de mise en page différente, juste plus d'air."
+      }
     ]
   },
   "components": [
@@ -101,11 +290,31 @@
       "Icônes SVG (Lucide React) uniquement, aucun emoji dans l'interface"
     ],
     "rules": [
-      { "name": "La Règle du Marqueur",    "body": "Le lime n'apparaît que là où l'utilisateur peut agir ou doit regarder. Sur une page donnée, il occupe ≤10 % de la surface visible. Sa rareté est son signal.", "section": "colors" },
-      { "name": "La Règle Sémantique",     "body": "Danger (#f87171) et succès (#4ade80) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.", "section": "colors" },
-      { "name": "La Règle du Minimum",     "body": "Aucun texte en dessous de 12px dans l'interface, y compris les labels et les métadonnées.", "section": "typography" },
-      { "name": "La Règle du Plat",        "body": "Toute tentation d'ajouter une box-shadow pour 'donner du relief' est un signal que la hiérarchie tonale est cassée — corriger les couleurs de surface plutôt qu'ajouter une ombre.", "section": "elevation" },
-      { "name": "La Règle du Rayon Cohérent", "body": "Un bouton et le champ adjacent dans le même formulaire utilisent le même rounded-lg. Mélanger rounded-md et rounded-lg dans la même zone crée une incohérence perceptible.", "section": "shapes" }
+      {
+        "name": "La Règle du Marqueur",
+        "body": "Le lime n'apparaît que là où l'utilisateur peut agir ou doit regarder. Sur une page donnée, il occupe ≤10 % de la surface visible. Sa rareté est son signal.",
+        "section": "colors"
+      },
+      {
+        "name": "La Règle Sémantique",
+        "body": "Danger (#f87171) et succès (#4ade80) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.",
+        "section": "colors"
+      },
+      {
+        "name": "La Règle du Minimum",
+        "body": "Aucun texte en dessous de 12px dans l'interface, y compris les labels et les métadonnées.",
+        "section": "typography"
+      },
+      {
+        "name": "La Règle du Plat",
+        "body": "Toute tentation d'ajouter une box-shadow pour 'donner du relief' est un signal que la hiérarchie tonale est cassée — corriger les couleurs de surface plutôt qu'ajouter une ombre.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Règle du Rayon Cohérent",
+        "body": "Un bouton et le champ adjacent dans le même formulaire utilisent le même rounded-lg. Mélanger rounded-md et rounded-lg dans la même zone crée une incohérence perceptible.",
+        "section": "shapes"
+      }
     ],
     "dos": [
       "Do utiliser #c8ff3e uniquement pour les actions primaires et le focus — jamais pour la décoration ni les icônes passives.",
