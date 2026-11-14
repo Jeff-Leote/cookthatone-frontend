@@ -16,6 +16,7 @@ import {
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
 import { ingredientUnits, usesSpoonEstimate } from "@/lib/units";
+import { useSlowRequest } from "@/lib/useSlowRequest";
 
 interface IngredientRow {
   key: string;
@@ -53,6 +54,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   const [catalogue, setCatalogue] = useState<Ingredient[] | null>(null);
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
+  const isSlow = useSlowRequest(submitting);
   const [error, setError] = useState<string | null>(null);
   const [addIngredientOpen, setAddIngredientOpen] = useState(false);
 
@@ -562,18 +564,25 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
           </Button>
         </Card>
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => router.back()}
-          >
-            Annuler
-          </Button>
-          <Button type="submit" disabled={submitting}>
-            <Check size={16} aria-hidden="true" />{" "}
-            {submitting ? "Enregistrement…" : "Enregistrer"}
-          </Button>
+        <div className="flex flex-col gap-2">
+          {isSlow && (
+            <p role="status" className="text-xs text-foreground-secondary">
+              Le serveur se réveille, encore quelques secondes…
+            </p>
+          )}
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.back()}
+            >
+              Annuler
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              <Check size={16} aria-hidden="true" />{" "}
+              {submitting ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+          </div>
         </div>
       </form>
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Check, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GenerateShoppingListDialog } from "@/components/shopping/GenerateShoppingListDialog";
+import { useSlowRequest } from "@/lib/useSlowRequest";
 import { ApiError, shopping } from "@/lib/api";
 import {
   addMonths,
@@ -44,6 +45,7 @@ export default function ShoppingPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyListId, setBusyListId] = useState<string | null>(null);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const isRegenerateSlow = useSlowRequest(busyListId !== null);
 
   const loadLists = useCallback(async () => {
     const all = await shopping.list();
@@ -265,6 +267,12 @@ export default function ShoppingPage() {
         </output>
       )}
 
+      {isRegenerateSlow && (
+        <p role="status" className="text-xs text-foreground-secondary">
+          Le serveur se réveille, encore quelques secondes…
+        </p>
+      )}
+
       {lists?.length === 0 && (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
           <ShoppingCart
@@ -346,7 +354,7 @@ export default function ShoppingPage() {
                         onClick={() => handleRegenerate(list)}
                         disabled={busy}
                       >
-                        Régénérer
+                        {busy ? "Régénération…" : "Régénérer"}
                       </Button>
                       <Button
                         type="button"

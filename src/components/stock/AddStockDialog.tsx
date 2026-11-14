@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
+import { useSlowRequest } from "@/lib/useSlowRequest";
 
 interface AddStockDialogProps {
   open: boolean;
@@ -15,7 +16,7 @@ interface AddStockDialogProps {
     quantity: number;
     unit: Unit;
     expiresAt?: string;
-  }) => void;
+  }) => Promise<void>;
   onClose: () => void;
 }
 
@@ -27,6 +28,8 @@ export function AddStockDialog({
 }: AddStockDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [ingredientId, setIngredientId] = useState(ingredients[0]?.id ?? "");
+  const [submitting, setSubmitting] = useState(false);
+  const isSlow = useSlowRequest(submitting);
   // L'unité est celle de l'ingrédient, fixée à sa création : le stock, les
   // recettes et la liste de courses restent comparables.
   const unit: Unit =
@@ -42,18 +45,23 @@ export function AddStockDialog({
     if (!open && dialog.open) dialog.close();
   }, [open, ingredients]);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const quantity = Number(data.get("quantity"));
     const expiresAt = String(data.get("expiresAt") || "");
     if (!ingredientId || !(quantity > 0)) return;
-    onSubmit({
-      ingredientId,
-      quantity,
-      unit,
-      expiresAt: expiresAt || undefined,
-    });
+    setSubmitting(true);
+    try {
+      await onSubmit({
+        ingredientId,
+        quantity,
+        unit,
+        expiresAt: expiresAt || undefined,
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -139,8 +147,13 @@ export function AddStockDialog({
             type="date"
             hint="Facultatif"
           />
-          <Button type="submit" className="mt-1">
-            Ajouter
+          {isSlow && (
+            <p role="status" className="text-xs text-foreground-secondary">
+              Le serveur se réveille, encore quelques secondes…
+            </p>
+          )}
+          <Button type="submit" className="mt-1" disabled={submitting}>
+            {submitting ? "Ajout…" : "Ajouter"}
           </Button>
         </form>
       )}
