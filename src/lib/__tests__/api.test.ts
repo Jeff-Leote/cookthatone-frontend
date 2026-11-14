@@ -51,7 +51,11 @@ describe("api — déduplication du refresh silencieux", () => {
           status: 200,
           statusText: "OK",
           json: () =>
-            Promise.resolve({ id: "1", email: "user@test.fr", pseudo: "sophie" }),
+            Promise.resolve({
+              id: "1",
+              email: "user@test.fr",
+              pseudo: "sophie",
+            }),
         } as Response);
       }
 
