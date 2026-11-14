@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle, Package, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { AddStockDialog } from "@/components/stock/AddStockDialog";
 import {
   ApiError,
@@ -29,6 +30,10 @@ export default function StockPage() {
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirmRemoveItem, setConfirmRemoveItem] = useState<StockItem | null>(
+    null,
+  );
+  const [confirmRemoveSelected, setConfirmRemoveSelected] = useState(false);
 
   function loadStock() {
     stockApi
@@ -78,14 +83,14 @@ export default function StockPage() {
     }
   }
 
-  async function handleRemove(item: StockItem) {
-    if (
-      !window.confirm(
-        `Retirer « ${item.ingredient?.name ?? "cet article"} » du stock ?`,
-      )
-    ) {
-      return;
-    }
+  function handleRemove(item: StockItem) {
+    setConfirmRemoveItem(item);
+  }
+
+  async function handleConfirmRemoveItem() {
+    if (!confirmRemoveItem) return;
+    const item = confirmRemoveItem;
+    setConfirmRemoveItem(null);
     try {
       await stockApi.remove(item.id);
       loadStock();
@@ -107,10 +112,12 @@ export default function StockPage() {
     setSelected(checked ? new Set(items?.map((i) => i.id)) : new Set());
   }
 
-  async function handleRemoveSelected() {
-    if (!window.confirm(`Retirer ${selected.size} article(s) du stock ?`)) {
-      return;
-    }
+  function handleRemoveSelected() {
+    setConfirmRemoveSelected(true);
+  }
+
+  async function handleConfirmRemoveSelected() {
+    setConfirmRemoveSelected(false);
     try {
       await Promise.all([...selected].map((id) => stockApi.remove(id)));
       setSelected(new Set());
@@ -323,6 +330,22 @@ export default function StockPage() {
         ingredients={catalogue}
         onSubmit={handleAdd}
         onClose={() => setAddOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmRemoveItem !== null}
+        title={`Retirer « ${confirmRemoveItem?.ingredient?.name ?? "cet article"} » du stock ?`}
+        confirmLabel="Retirer"
+        onConfirm={handleConfirmRemoveItem}
+        onClose={() => setConfirmRemoveItem(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmRemoveSelected}
+        title={`Retirer ${selected.size} article${selected.size > 1 ? "s" : ""} du stock ?`}
+        confirmLabel="Retirer"
+        onConfirm={handleConfirmRemoveSelected}
+        onClose={() => setConfirmRemoveSelected(false)}
       />
     </div>
   );

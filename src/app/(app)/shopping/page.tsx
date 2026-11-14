@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Check, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { GenerateShoppingListDialog } from "@/components/shopping/GenerateShoppingListDialog";
 import { useSlowRequest } from "@/lib/useSlowRequest";
 import { ApiError, shopping } from "@/lib/api";
@@ -45,6 +46,10 @@ export default function ShoppingPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyListId, setBusyListId] = useState<string | null>(null);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [confirmUnvalidateList, setConfirmUnvalidateList] =
+    useState<ShoppingList | null>(null);
+  const [confirmDeleteList, setConfirmDeleteList] =
+    useState<ShoppingList | null>(null);
   const isRegenerateSlow = useSlowRequest(busyListId !== null);
 
   const loadLists = useCallback(async () => {
@@ -185,14 +190,14 @@ export default function ShoppingPage() {
     }
   }
 
-  async function handleUnvalidate(list: ShoppingList) {
-    if (
-      !window.confirm(
-        "Dévalider cette liste ? Le stock ajouté lors de la validation sera retiré.",
-      )
-    ) {
-      return;
-    }
+  function handleUnvalidate(list: ShoppingList) {
+    setConfirmUnvalidateList(list);
+  }
+
+  async function handleConfirmUnvalidate() {
+    if (!confirmUnvalidateList) return;
+    const list = confirmUnvalidateList;
+    setConfirmUnvalidateList(null);
     setBusyListId(list.id);
     setError(null);
     try {
@@ -209,8 +214,14 @@ export default function ShoppingPage() {
     }
   }
 
-  async function handleDelete(list: ShoppingList) {
-    if (!window.confirm("Supprimer cette liste de courses ?")) return;
+  function handleDelete(list: ShoppingList) {
+    setConfirmDeleteList(list);
+  }
+
+  async function handleConfirmDelete() {
+    if (!confirmDeleteList) return;
+    const list = confirmDeleteList;
+    setConfirmDeleteList(null);
     try {
       await shopping.remove(list.id);
       setLists((prev) => prev?.filter((l) => l.id !== list.id));
@@ -461,6 +472,23 @@ export default function ShoppingPage() {
         defaultDate={monthDate}
         onGenerated={handleGenerated}
         onClose={() => setGenerateOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmUnvalidateList !== null}
+        title="Dévalider cette liste ?"
+        description="Le stock ajouté lors de la validation sera retiré."
+        confirmLabel="Dévalider"
+        onConfirm={handleConfirmUnvalidate}
+        onClose={() => setConfirmUnvalidateList(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteList !== null}
+        title="Supprimer cette liste de courses ?"
+        confirmLabel="Supprimer"
+        onConfirm={handleConfirmDelete}
+        onClose={() => setConfirmDeleteList(null)}
       />
     </div>
   );

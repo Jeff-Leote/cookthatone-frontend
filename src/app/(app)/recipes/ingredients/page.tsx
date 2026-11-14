@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, Package, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ApiError, ingredients as ingredientsApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
@@ -35,6 +36,9 @@ export default function IngredientsPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [confirmIngredient, setConfirmIngredient] = useState<Ingredient | null>(
+    null,
+  );
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSlow = useSlowRequest(submitting);
 
@@ -143,10 +147,14 @@ export default function IngredientsPage() {
     }
   }
 
-  async function handleRemove(ingredient: Ingredient) {
-    if (!window.confirm(`Retirer « ${ingredient.name} » du catalogue ?`)) {
-      return;
-    }
+  function handleRemove(ingredient: Ingredient) {
+    setConfirmIngredient(ingredient);
+  }
+
+  async function handleConfirmRemove() {
+    if (!confirmIngredient) return;
+    const ingredient = confirmIngredient;
+    setConfirmIngredient(null);
     setRemovingId(ingredient.id);
     try {
       await ingredientsApi.remove(ingredient.id);
@@ -375,6 +383,14 @@ export default function IngredientsPage() {
           </tbody>
         </table>
       )}
+      <ConfirmDialog
+        open={confirmIngredient !== null}
+        title={`Retirer « ${confirmIngredient?.name} » du catalogue ?`}
+        description="Cet ingrédient sera retiré de toutes vos recettes et de votre stock."
+        confirmLabel="Retirer"
+        onConfirm={handleConfirmRemove}
+        onClose={() => setConfirmIngredient(null)}
+      />
     </div>
   );
 }
