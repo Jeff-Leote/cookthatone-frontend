@@ -76,6 +76,21 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* Retours d'état essentiels : fondu court, sans déplacement */
+  button,
+  a,
+  [role="status"],
+  [role="alert"],
+  [aria-live],
+  dialog,
+  input,
+  select,
+  textarea {
+    transition-duration: 150ms !important;
+    transition-property:
+      opacity, background-color, color, border-color, box-shadow !important;
+  }
 }
 
 /* Lien d'évitement (RGAA 12.6) : visible uniquement au focus clavier */
