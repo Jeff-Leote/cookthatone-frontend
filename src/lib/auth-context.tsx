@@ -10,15 +10,15 @@ import {
   type ReactNode,
 } from "react";
 import { ApiError, auth } from "./api";
-import { clearToken, getToken, setToken } from "./token";
 import type { User } from "./types";
 
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  /** Le token existe mais son statut n'a pas pu être vérifié (backend
-   * injoignable) — distinct de "non authentifié" : ne doit pas rediriger
-   * vers /login, seulement proposer de réessayer. */
+  /** Le refresh a échoué pour une raison autre qu'une session absente ou
+   * expirée (backend injoignable, panne réseau) — distinct de « non
+   * authentifié » : ne redirige pas vers /login, propose seulement de
+   * réessayer. */
   authError: boolean;
   login: (email: string, password: string) => Promise<void>;
   /** Ne connecte plus automatiquement : le compte doit d'abord être validé
@@ -40,29 +40,27 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [authError, setAuthError] = useState(false);
   const [attempt, setAttempt] = useState(0);
 
-  // Charge le profil au montage à partir du token déjà stocké, le cas
-  // échéant. Le drapeau `cancelled` évite un setState après démontage
-  // (changement de page pendant que la requête est en vol).
+  // Tente un refresh silencieux au montage pour restaurer la session depuis
+  // le cookie httpOnly cto_refresh. Si le cookie est absent ou expiré,
+  // refresh() renvoie false et on reste déconnecté (pas d'erreur affichée).
   useEffect(() => {
     let cancelled = false;
 
     async function loadInitialUser() {
       setLoading(true);
       setAuthError(false);
-      if (!getToken()) {
-        if (!cancelled) setLoading(false);
-        return;
-      }
       try {
+        const refreshed = await auth.refresh();
+        if (!refreshed) {
+          if (!cancelled) setLoading(false);
+          return;
+        }
         const me = await auth.me();
         if (!cancelled) setUser(me);
       } catch (err) {
-        // Un token vraiment invalide/expiré (401) déconnecte
-        // l'utilisateur. Toute autre erreur (backend injoignable, panne
-        // réseau passagère) ne doit pas effacer une session valide —
-        // on le signale sans toucher au token.
+        // Un 401 après un refresh réussi est inattendu ; toute autre panne
+        // réseau ne doit pas effacer la tentative : on signale sans rediriger.
         if (err instanceof ApiError && err.status === 401) {
-          clearToken();
           if (!cancelled) setUser(null);
         } else if (!cancelled) {
           setAuthError(true);
@@ -79,8 +77,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   }, [attempt]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { access_token } = await auth.login({ email, password });
-    setToken(access_token);
+    await auth.login({ email, password });
     const me = await auth.me();
     setUser(me);
   }, []);
@@ -94,15 +91,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   );
 
   const logout = useCallback(() => {
-    clearToken();
+    void auth.logout();
     setUser(null);
   }, []);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
-  // Sans useMemo, un nouvel objet litteral est cree a chaque rendu de
-  // AuthProvider, ce qui re-rendrait tous les consommateurs du contexte
-  // meme quand rien n'a reellement change.
   const value = useMemo(
     () => ({ user, loading, authError, login, register, logout, retry }),
     [user, loading, authError, login, register, logout, retry],

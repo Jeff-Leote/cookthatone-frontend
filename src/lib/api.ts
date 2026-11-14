@@ -1,6 +1,4 @@
-import { getToken } from "./token";
 import type {
-  AuthResponse,
   CalendarEntry,
   Ingredient,
   MealSlot,
@@ -16,6 +14,40 @@ import type {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
+// Le jeton d'accès est gardé en mémoire uniquement : invisible au JS tiers
+// (pas de localStorage) et absent du DOM. Il est perdu au rechargement ;
+// auth-context restaure la session via un refresh silencieux au montage.
+let _accessToken: string | null = null;
+// Déduplique les refreshs simultanés : si plusieurs requêtes échouent en 401
+// en même temps, un seul appel à /api/auth/refresh est émis.
+let _refreshPromise: Promise<boolean> | null = null;
+
+export function setAccessToken(token: string | null): void {
+  _accessToken = token;
+}
+
+async function silentRefresh(): Promise<boolean> {
+  if (_refreshPromise) return _refreshPromise;
+  _refreshPromise = fetch("/api/auth/refresh", { method: "POST" })
+    .then(async (res) => {
+      if (!res.ok) {
+        _accessToken = null;
+        return false;
+      }
+      const data = (await res.json()) as { access_token: string };
+      _accessToken = data.access_token;
+      return true;
+    })
+    .catch(() => {
+      _accessToken = null;
+      return false;
+    })
+    .finally(() => {
+      _refreshPromise = null;
+    });
+  return _refreshPromise;
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -26,13 +58,21 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
+async function request<T>(
+  path: string,
+  options: RequestInit = {},
+  isRetry = false,
+): Promise<T> {
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (_accessToken) headers.set("Authorization", `Bearer ${_accessToken}`);
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+
+  if (res.status === 401 && !isRetry) {
+    const refreshed = await silentRefresh();
+    if (refreshed) return request<T>(path, options, true);
+  }
 
   if (!res.ok) {
     let message = res.statusText;
@@ -51,18 +91,46 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return (await res.json()) as T;
 }
 
+async function proxyRequest(
+  path: string,
+  body: unknown,
+): Promise<{ access_token: string }> {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const data = (await res.json()) as { message?: string | string[] };
+      message = Array.isArray(data.message)
+        ? data.message.join(", ")
+        : (data.message ?? message);
+    } catch {
+      // pas de corps JSON exploitable
+    }
+    throw new ApiError(res.status, message);
+  }
+  return (await res.json()) as { access_token: string };
+}
+
 export const auth = {
+  login: async (data: { email: string; password: string }): Promise<void> => {
+    const { access_token } = await proxyRequest("/api/auth/login", data);
+    _accessToken = access_token;
+  },
+  logout: async (): Promise<void> => {
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+    _accessToken = null;
+  },
+  refresh: silentRefresh,
+  me: () => request<User>("/auth/me"),
   register: (data: { email: string; pseudo: string; password: string }) =>
     request<RegisterResponse>("/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  login: (data: { email: string; password: string }) =>
-    request<AuthResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-  me: () => request<User>("/auth/me"),
   forgotPassword: (data: { email: string }) =>
     request<{ message: string }>("/auth/forgot-password", {
       method: "POST",
@@ -222,8 +290,6 @@ export const stock = {
 
 export const shopping = {
   list: () => request<ShoppingList[]>("/shopping"),
-  // Une période de plusieurs semaines donne une liste par semaine. Une réponse
-  // à liste unique (ancienne API) est acceptée aussi.
   generate: async (periodStart: string, periodEnd: string) => {
     const result = await request<ShoppingList[] | ShoppingList>(
       "/shopping/generate",
