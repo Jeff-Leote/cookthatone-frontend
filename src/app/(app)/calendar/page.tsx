@@ -199,7 +199,7 @@ export default function CalendarPage() {
                 const entry = findEntry(day, slot);
                 return (
                   <div key={slot} className="flex flex-col gap-1">
-                    <p className="text-[10px] uppercase tracking-wide text-foreground-secondary">
+                    <p className="text-[12px] uppercase tracking-wide text-foreground-secondary">
                       {MEAL_SLOT_LABEL[slot]}
                     </p>
                     <MealSlotCell

@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "./nav-items";
 
 const MOBILE_ITEMS = [
-  ...NAV_ITEMS.map((i) =>
-    i.label === "Tableau de bord" ? { ...i, label: "Accueil" } : i,
-  ),
+  ...NAV_ITEMS.map((i) => {
+    if (i.label === "Tableau de bord") return { ...i, label: "Accueil" };
+    if (i.label === "Liste de courses") return { ...i, label: "Courses" };
+    return i;
+  }),
   { href: "/profile", label: "Profil", icon: "👤" },
 ] as const;
 
@@ -26,7 +28,7 @@ export function BottomNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] ${
+            className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-[12px] ${
               active ? "text-accent" : "text-foreground-secondary"
             }`}
           >
