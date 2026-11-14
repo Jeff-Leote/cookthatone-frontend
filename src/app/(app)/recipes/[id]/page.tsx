@@ -34,6 +34,13 @@ export default function RecipeDetailPage() {
     };
   }, [params.id]);
 
+  useEffect(() => {
+    if (recipe) document.title = `${recipe.title} · CookthatOne`;
+    return () => {
+      document.title = "Recette · CookthatOne";
+    };
+  }, [recipe]);
+
   async function handleDelete() {
     if (!recipe) return;
     if (
