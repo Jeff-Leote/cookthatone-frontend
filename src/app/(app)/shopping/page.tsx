@@ -385,18 +385,25 @@ export default function ShoppingPage() {
                           key={item.id}
                           className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-raised"
                         >
-                          <input
-                            id={id}
-                            type="checkbox"
-                            checked={item.checked}
-                            disabled={list.validated}
-                            onChange={(e) =>
-                              handleToggle(list, item.id, e.target.checked)
-                            }
-                            className="h-4 w-4 accent-accent"
-                          />
                           <label
                             htmlFor={id}
+                            className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center"
+                          >
+                            <span className="sr-only">
+                              {item.ingredient?.name ?? "Ingrédient"}
+                            </span>
+                            <input
+                              id={id}
+                              type="checkbox"
+                              checked={item.checked}
+                              disabled={list.validated}
+                              onChange={(e) =>
+                                handleToggle(list, item.id, e.target.checked)
+                              }
+                              className="h-4 w-4 accent-accent"
+                            />
+                          </label>
+                          <span
                             className={`flex-1 text-sm ${
                               item.checked
                                 ? "text-foreground-secondary line-through"
@@ -404,7 +411,7 @@ export default function ShoppingPage() {
                             }`}
                           >
                             {item.ingredient?.name ?? "Ingrédient"}
-                          </label>
+                          </span>
                           <span className="text-sm text-foreground-secondary">
                             {missing} {UNIT_LABEL[item.unit] ?? item.unit}
                           </span>

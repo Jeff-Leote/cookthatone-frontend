@@ -81,7 +81,7 @@ export default function RecipeDetailPage() {
       <div>
         <Link
           href="/recipes"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground"
+          className="mb-4 inline-flex items-center gap-1.5 py-3 text-sm text-foreground-secondary hover:text-foreground"
         >
           <span aria-hidden="true">←</span> Toutes les recettes
         </Link>

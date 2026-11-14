@@ -70,7 +70,7 @@ export function MealSlotCell({
               type="button"
               variant="secondary"
               onClick={onValidate}
-              className="px-2 py-1 text-xs"
+              className="px-2 min-h-[44px] text-xs"
               aria-label={`Valider — ${context}, ${title}`}
             >
               Valider
@@ -79,7 +79,7 @@ export function MealSlotCell({
               type="button"
               variant="ghost"
               onClick={onValidateDifferent}
-              className="px-2 py-1 text-xs"
+              className="px-2 min-h-[44px] text-xs"
               aria-label={`Valider avec une autre recette — ${context}, ${title}`}
             >
               Autre recette
@@ -88,7 +88,7 @@ export function MealSlotCell({
               type="button"
               variant="ghost"
               onClick={onMove}
-              className="px-2 py-1 text-xs"
+              className="px-2 min-h-[44px] text-xs"
               aria-label={`Déplacer — ${context}, ${title}`}
             >
               Déplacer
@@ -99,7 +99,7 @@ export function MealSlotCell({
           type="button"
           variant="ghost"
           onClick={onRemove}
-          className="px-2 py-1 text-xs"
+          className="px-2 min-h-[44px] text-xs"
           aria-label={`Retirer du calendrier — ${context}, ${title}`}
         >
           <span aria-hidden="true">✕</span>

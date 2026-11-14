@@ -34,7 +34,7 @@ export function Sidebar() {
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                  className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
                     active
                       ? "bg-accent/10 font-medium text-accent"
                       : "text-foreground-secondary hover:bg-surface-raised hover:text-foreground"
@@ -53,14 +53,14 @@ export function Sidebar() {
         <Link
           href="/profile"
           aria-current={pathname === "/profile" ? "page" : undefined}
-          className="truncate rounded-lg px-3 py-2 text-sm text-foreground-secondary hover:text-foreground"
+          className="truncate rounded-lg px-3 py-3 text-sm text-foreground-secondary hover:text-foreground"
         >
           {user?.email ?? "…"}
         </Link>
         <button
           type="button"
           onClick={logout}
-          className="rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-danger/10"
+          className="rounded-lg px-3 py-3 text-left text-sm text-danger hover:bg-danger/10"
         >
           Déconnexion
         </button>

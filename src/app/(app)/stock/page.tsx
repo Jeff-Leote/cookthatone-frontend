@@ -180,16 +180,21 @@ export default function StockPage() {
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-foreground-secondary">
                 <th scope="col" className="py-2 font-medium">
-                  <label className="sr-only" htmlFor="select-all-stock">
-                    Tout sélectionner
+                  <label
+                    htmlFor="select-all-stock"
+                    className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center"
+                  >
+                    <span className="sr-only">Tout sélectionner</span>
+                    <input
+                      id="select-all-stock"
+                      type="checkbox"
+                      checked={
+                        items.length > 0 && selected.size === items.length
+                      }
+                      onChange={(e) => toggleSelectAll(e.target.checked)}
+                      className="h-4 w-4 accent-accent"
+                    />
                   </label>
-                  <input
-                    id="select-all-stock"
-                    type="checkbox"
-                    checked={items.length > 0 && selected.size === items.length}
-                    onChange={(e) => toggleSelectAll(e.target.checked)}
-                    className="h-4 w-4 accent-accent"
-                  />
                 </th>
                 <th scope="col" className="py-2 font-medium">
                   Ingrédient
@@ -213,18 +218,21 @@ export default function StockPage() {
                 return (
                   <tr key={item.id} className="border-b border-border">
                     <td className="py-2.5">
-                      <label className="sr-only" htmlFor={`select-${item.id}`}>
-                        Sélectionner {name}
+                      <label
+                        htmlFor={`select-${item.id}`}
+                        className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center"
+                      >
+                        <span className="sr-only">Sélectionner {name}</span>
+                        <input
+                          id={`select-${item.id}`}
+                          type="checkbox"
+                          checked={selected.has(item.id)}
+                          onChange={(e) =>
+                            toggleSelected(item.id, e.target.checked)
+                          }
+                          className="h-4 w-4 accent-accent"
+                        />
                       </label>
-                      <input
-                        id={`select-${item.id}`}
-                        type="checkbox"
-                        checked={selected.has(item.id)}
-                        onChange={(e) =>
-                          toggleSelected(item.id, e.target.checked)
-                        }
-                        className="h-4 w-4 accent-accent"
-                      />
                     </td>
                     <td className="py-2.5 font-medium">
                       <div className="flex items-center gap-2">
@@ -263,7 +271,7 @@ export default function StockPage() {
                               handleQuantityChange(item, value);
                             }
                           }}
-                          className={`w-20 rounded-lg border bg-surface px-2 py-1.5 text-sm focus-visible:border-accent ${
+                          className={`w-20 rounded-lg border bg-surface px-2 py-2.5 text-sm focus-visible:border-accent ${
                             isEmpty
                               ? "border-danger/40 text-danger"
                               : "border-border text-foreground"
