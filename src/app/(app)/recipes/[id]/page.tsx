@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { recipes as recipesApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
 import type { Recipe } from "@/lib/types";
@@ -16,6 +17,7 @@ export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,15 +44,14 @@ export default function RecipeDetailPage() {
     };
   }, [recipe]);
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!recipe) return;
-    if (
-      !window.confirm(
-        `Supprimer définitivement la recette « ${recipe.title} » ?`,
-      )
-    ) {
-      return;
-    }
+    setConfirmDelete(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!recipe) return;
+    setConfirmDelete(false);
     setDeleting(true);
     try {
       await recipesApi.remove(recipe.id);
@@ -179,6 +180,15 @@ export default function RecipeDetailPage() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title={`Supprimer la recette « ${recipe.title} » ?`}
+        description="Les entrées du calendrier liées à cette recette seront également supprimées."
+        confirmLabel="Supprimer"
+        onConfirm={handleConfirmDelete}
+        onClose={() => setConfirmDelete(false)}
+      />
     </div>
   );
 }

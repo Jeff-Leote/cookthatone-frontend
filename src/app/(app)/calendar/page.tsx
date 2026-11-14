@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { MealSlotCell } from "@/components/calendar/MealSlotCell";
 import { RecipePickerDialog } from "@/components/calendar/RecipePickerDialog";
 import { PortionsDialog } from "@/components/calendar/PortionsDialog";
@@ -31,6 +32,8 @@ export default function CalendarPage() {
   const [validateEntry, setValidateEntry] = useState<CalendarEntry | null>(
     null,
   );
+  const [confirmRemoveEntry, setConfirmRemoveEntry] =
+    useState<CalendarEntry | null>(null);
 
   const weekDays = getWeekDays(weekStart);
 
@@ -144,14 +147,14 @@ export default function CalendarPage() {
     }
   }
 
-  async function handleRemove(entry: CalendarEntry) {
-    if (
-      !window.confirm(
-        `Retirer « ${entry.recipe?.title ?? "ce repas"} » du calendrier ?`,
-      )
-    ) {
-      return;
-    }
+  function handleRemove(entry: CalendarEntry) {
+    setConfirmRemoveEntry(entry);
+  }
+
+  async function handleConfirmRemoveEntry() {
+    if (!confirmRemoveEntry) return;
+    const entry = confirmRemoveEntry;
+    setConfirmRemoveEntry(null);
     try {
       await calendar.remove(entry.id);
       loadEntries();
@@ -359,6 +362,14 @@ export default function CalendarPage() {
         weekDays={weekDays}
         onSelect={handleMove}
         onClose={() => setMoveEntry(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmRemoveEntry !== null}
+        title={`Retirer « ${confirmRemoveEntry?.recipe?.title ?? "ce repas"} » du calendrier ?`}
+        confirmLabel="Retirer"
+        onConfirm={handleConfirmRemoveEntry}
+        onClose={() => setConfirmRemoveEntry(null)}
       />
     </div>
   );
