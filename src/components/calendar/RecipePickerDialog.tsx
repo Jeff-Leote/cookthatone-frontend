@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { recipes as recipesApi } from "@/lib/api";
 import type { Recipe } from "@/lib/types";
@@ -187,7 +188,7 @@ export function RecipePickerDialog({
           aria-label="Fermer"
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
 

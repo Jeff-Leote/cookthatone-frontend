@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { ApiError, shopping } from "@/lib/api";
@@ -83,7 +84,7 @@ export function GenerateShoppingListDialog({
           aria-label="Fermer"
           className="rounded-md p-1 text-foreground-secondary hover:text-foreground"
         >
-          <span aria-hidden="true">✕</span>
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Package, Plus } from "lucide-react";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { recipes as recipesApi } from "@/lib/api";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
@@ -39,13 +40,13 @@ export default function RecipesPage() {
             href="/recipes/ingredients"
             className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-3 text-sm text-foreground hover:border-border-strong"
           >
-            <span aria-hidden="true">📦</span> Ingrédients
+            <Package size={16} aria-hidden="true" /> Ingrédients
           </Link>
           <Link
             href="/recipes/new"
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-3 text-sm font-medium text-accent-foreground hover:brightness-95"
           >
-            <span aria-hidden="true">+</span> Nouvelle recette
+            <Plus size={16} aria-hidden="true" /> Nouvelle recette
           </Link>
         </div>
       </div>

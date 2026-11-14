@@ -1,3 +1,4 @@
+import { Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { CalendarEntry } from "@/lib/types";
 
@@ -34,7 +35,7 @@ export function MealSlotCell({
           className="flex-1 justify-center text-xs"
           aria-label={`Planifier un repas — ${context}`}
         >
-          <span aria-hidden="true">+</span> Planifier
+          <Plus size={14} aria-hidden="true" /> Planifier
         </Button>
       </div>
     );
@@ -57,7 +58,7 @@ export function MealSlotCell({
       </p>
       {entry.done && (
         <p className="flex items-center gap-1 text-success">
-          <span aria-hidden="true">✓</span>
+          <Check size={12} aria-hidden="true" />
           {actualTitle && actualTitle !== title
             ? `Réalisé : ${actualTitle}`
             : "Validé"}
@@ -102,7 +103,7 @@ export function MealSlotCell({
           className="px-2 min-h-[44px] text-xs"
           aria-label={`Retirer du calendrier — ${context}, ${title}`}
         >
-          <span aria-hidden="true">✕</span>
+          <X size={14} aria-hidden="true" />
         </Button>
       </div>
     </div>

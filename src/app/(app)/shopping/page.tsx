@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Check, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GenerateShoppingListDialog } from "@/components/shopping/GenerateShoppingListDialog";
 import { ApiError, shopping } from "@/lib/api";
@@ -244,7 +245,7 @@ export default function ShoppingPage() {
             →
           </Button>
           <Button type="button" onClick={() => setGenerateOpen(true)}>
-            <span aria-hidden="true">+</span> Générer une liste de courses
+            <Plus size={16} aria-hidden="true" /> Générer une liste de courses
           </Button>
         </div>
       </div>
@@ -344,7 +345,7 @@ export default function ShoppingPage() {
                         onClick={() => handleDelete(list)}
                         aria-label="Supprimer cette liste"
                       >
-                        <span aria-hidden="true">🗑️</span>
+                        <Trash2 size={16} aria-hidden="true" />
                       </Button>
                     </div>
                   )}
@@ -353,8 +354,8 @@ export default function ShoppingPage() {
                 {list.validated && (
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="flex items-center gap-1.5 text-sm text-success">
-                      <span aria-hidden="true">✓</span> Courses validées — le
-                      stock a été mis à jour.
+                      <Check size={16} aria-hidden="true" /> Courses validées —
+                      le stock a été mis à jour.
                     </p>
                     <Button
                       type="button"
@@ -428,7 +429,7 @@ export default function ShoppingPage() {
                     disabled={busy || checkedCount === 0}
                     className="self-end"
                   >
-                    <span aria-hidden="true">✓</span>{" "}
+                    <Check size={16} aria-hidden="true" />{" "}
                     {busy ? "Validation…" : `Valider (${checkedCount})`}
                   </Button>
                 )}

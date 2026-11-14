@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ArrowLeft, Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
@@ -298,7 +299,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
             href={isEdit && recipeId ? `/recipes/${recipeId}` : "/recipes"}
             className="mb-4 inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground"
           >
-            <span aria-hidden="true">←</span> Retour
+            <ArrowLeft size={16} aria-hidden="true" /> Retour
           </Link>
           <h1 className="font-heading text-2xl font-medium">
             {isEdit ? "Modifier la recette" : "Nouvelle recette"}
@@ -458,7 +459,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                   onClick={() => removeIngredientRow(row.key)}
                   aria-label="Retirer cet ingrédient"
                 >
-                  <span aria-hidden="true">✕</span>
+                  <X size={16} aria-hidden="true" />
                 </Button>
                 {rowIngredient &&
                   usesSpoonEstimate(rowIngredient, row.unit) && (
@@ -483,7 +484,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
               disabled={!catalogue || catalogue.length === 0}
               className="self-start"
             >
-              <span aria-hidden="true">+</span> Ajouter un ingrédient
+              <Plus size={16} aria-hidden="true" /> Ajouter un ingrédient
             </Button>
             <Button
               type="button"
@@ -491,7 +492,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
               onClick={() => setAddIngredientOpen(true)}
               className="self-start"
             >
-              <span aria-hidden="true">+</span> Nouvel ingrédient
+              <Plus size={16} aria-hidden="true" /> Nouvel ingrédient
             </Button>
           </div>
         </Card>
@@ -547,7 +548,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
                 onClick={() => removeStepRow(row.key)}
                 aria-label={`Retirer l'étape ${index + 1}`}
               >
-                <span aria-hidden="true">✕</span>
+                <X size={16} aria-hidden="true" />
               </Button>
             </div>
           ))}
@@ -557,7 +558,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
             onClick={addStepRow}
             className="self-start"
           >
-            <span aria-hidden="true">+</span> Ajouter une étape
+            <Plus size={16} aria-hidden="true" /> Ajouter une étape
           </Button>
         </Card>
 
@@ -570,7 +571,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
             Annuler
           </Button>
           <Button type="submit" disabled={submitting}>
-            <span aria-hidden="true">✓</span>{" "}
+            <Check size={16} aria-hidden="true" />{" "}
             {submitting ? "Enregistrement…" : "Enregistrer"}
           </Button>
         </div>
