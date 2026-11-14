@@ -23,12 +23,10 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
         )}
       </div>
       <div className="mt-auto flex items-center gap-4 border-t border-border pt-3 text-xs text-foreground-secondary">
-        {totalTime !== null && (
-          <span className="flex items-center gap-1">
-            <Clock size={12} aria-hidden="true" />
-            {totalTime} min
-          </span>
-        )}
+        <span className="flex items-center gap-1">
+          <Clock size={12} aria-hidden="true" />
+          {totalTime !== null ? `${totalTime} min` : "—"}
+        </span>
         <span className="flex items-center gap-1">
           <Users size={12} aria-hidden="true" />
           {recipe.servings} pers.

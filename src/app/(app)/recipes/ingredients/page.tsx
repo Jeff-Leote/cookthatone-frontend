@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Package, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ApiError, ingredients as ingredientsApi } from "@/lib/api";
 import { UNIT_LABEL } from "@/lib/format";
@@ -240,9 +240,18 @@ export default function IngredientsPage() {
       )}
 
       {items !== null && items.length === 0 && (
-        <p className="text-sm text-foreground-secondary">
-          Aucun ingrédient pour l&apos;instant.
-        </p>
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
+          <Package
+            className="size-10 text-foreground-secondary"
+            aria-hidden="true"
+          />
+          <div>
+            <p className="font-medium">Aucun ingrédient pour l&apos;instant</p>
+            <p className="mt-1 text-sm text-foreground-secondary">
+              Ajoute un ingrédient avec le formulaire ci-dessus.
+            </p>
+          </div>
+        </div>
       )}
 
       {items !== null && items.length > 0 && (

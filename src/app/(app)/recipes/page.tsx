@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Package, Plus } from "lucide-react";
+import { BookOpen, Package, Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { recipes as recipesApi } from "@/lib/api";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
@@ -77,11 +78,29 @@ export default function RecipesPage() {
         </p>
       )}
 
-      {!error && items !== null && items.length === 0 && (
+      {!error && items !== null && items.length === 0 && !search && (
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
+          <BookOpen
+            className="size-10 text-foreground-secondary"
+            aria-hidden="true"
+          />
+          <div>
+            <p className="font-medium">Aucune recette pour l&apos;instant</p>
+            <p className="mt-1 text-sm text-foreground-secondary">
+              Commence par créer ta première recette.
+            </p>
+          </div>
+          <Link href="/recipes/new">
+            <Button>
+              <Plus className="size-4" aria-hidden="true" /> Créer une recette
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {!error && items !== null && items.length === 0 && search && (
         <p className="text-sm text-foreground-secondary">
-          {search
-            ? "Aucune recette ne correspond à ta recherche."
-            : "Aucune recette pour l'instant — commence par en créer une."}
+          Aucune recette ne correspond à ta recherche.
         </p>
       )}
 
