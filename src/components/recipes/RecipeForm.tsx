@@ -16,6 +16,12 @@ import {
 import { UNIT_LABEL } from "@/lib/format";
 import type { Ingredient, Unit } from "@/lib/types";
 import { ingredientUnits, usesSpoonEstimate } from "@/lib/units";
+import {
+  SOURCE_URL_ERROR_MESSAGE,
+  isSourceUrlError,
+  sourceUrlForCreate,
+  sourceUrlForUpdate,
+} from "@/lib/source-url";
 import { useSlowRequest } from "@/lib/useSlowRequest";
 
 interface IngredientRow {
@@ -30,6 +36,8 @@ interface StepRow {
   instruction: string;
 }
 
+const SOURCE_URL_FIELD_ID = "recipe-source-url";
+
 function newKey() {
   return crypto.randomUUID();
 }
@@ -43,6 +51,12 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   const [prepTimeMin, setPrepTimeMin] = useState("");
   const [cookTimeMin, setCookTimeMin] = useState("");
   const [servings, setServings] = useState("4");
+  const [sourceUrl, setSourceUrl] = useState("");
+  // Source telle qu'elle était à l'ouverture : sert à ne l'envoyer que si elle change.
+  const [originalSourceUrl, setOriginalSourceUrl] = useState<string | null>(
+    null,
+  );
+  const [sourceUrlError, setSourceUrlError] = useState<string | null>(null);
   const [ingredientRows, setIngredientRows] = useState<IngredientRow[]>([]);
   const [stepRows, setStepRows] = useState<StepRow[]>([]);
   // Lignes telles qu'elles étaient à l'ouverture : permet de n'enregistrer que
@@ -77,6 +91,8 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
         setPrepTimeMin(r.prepTimeMin?.toString() ?? "");
         setCookTimeMin(r.cookTimeMin?.toString() ?? "");
         setServings(r.servings.toString());
+        setSourceUrl(r.sourceUrl ?? "");
+        setOriginalSourceUrl(r.sourceUrl ?? null);
         const rows =
           r.recipeIngredients?.map((ri) => ({
             key: newKey(),
@@ -197,6 +213,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setSourceUrlError(null);
 
     if (!title.trim()) {
       setError("Le titre est obligatoire.");
@@ -221,6 +238,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
           prepTimeMin: prepTimeMin ? Number(prepTimeMin) : undefined,
           cookTimeMin: cookTimeMin ? Number(cookTimeMin) : undefined,
           servings: Number(servings),
+          ...sourceUrlForUpdate(sourceUrl, originalSourceUrl),
         });
 
         const currentIds = new Set(
@@ -265,6 +283,7 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
           prepTimeMin: prepTimeMin ? Number(prepTimeMin) : undefined,
           cookTimeMin: cookTimeMin ? Number(cookTimeMin) : undefined,
           servings: Number(servings),
+          ...sourceUrlForCreate(sourceUrl),
           ingredients: validIngredientRows.map((row) => ({
             ingredientId: row.ingredientId,
             quantity: Number(row.quantity),
@@ -275,9 +294,18 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
         router.push(`/recipes/${created.id}`);
       }
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Une erreur est survenue.",
-      );
+      if (
+        err instanceof ApiError &&
+        isSourceUrlError(err.status, err.message)
+      ) {
+        setSourceUrlError(SOURCE_URL_ERROR_MESSAGE);
+        // Le champ est loin du bouton d'envoi : on y place le focus.
+        document.getElementById(SOURCE_URL_FIELD_ID)?.focus();
+      } else {
+        setError(
+          err instanceof ApiError ? err.message : "Une erreur est survenue.",
+        );
+      }
       setSubmitting(false);
     }
   }
@@ -365,6 +393,21 @@ export function RecipeForm({ recipeId }: { recipeId?: string }) {
               onChange={(e) => setServings(e.target.value)}
             />
           </div>
+          <Field
+            id={SOURCE_URL_FIELD_ID}
+            label="Adresse de la source"
+            type="url"
+            inputMode="url"
+            autoComplete="off"
+            hint="Adresse de la page d'origine, commençant par https://"
+            error={sourceUrlError ?? undefined}
+            className="min-h-11"
+            value={sourceUrl}
+            onChange={(e) => {
+              setSourceUrl(e.target.value);
+              setSourceUrlError(null);
+            }}
+          />
         </Card>
 
         <Card className="flex flex-col gap-4">

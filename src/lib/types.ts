@@ -58,6 +58,8 @@ export interface Recipe {
   prepTimeMin: number | null;
   cookTimeMin: number | null;
   servings: number;
+  // Adresse de la page d'origine ; null si aucune source n'est renseignée.
+  sourceUrl: string | null;
   createdAt: string;
   updatedAt: string;
   recipeIngredients?: RecipeIngredient[];

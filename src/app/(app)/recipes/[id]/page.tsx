@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { RecipeSource } from "@/components/recipes/RecipeSource";
 import { Card } from "@/components/ui/Card";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { recipes as recipesApi } from "@/lib/api";
@@ -97,6 +98,7 @@ export default function RecipeDetailPage() {
                 {recipe.description}
               </p>
             )}
+            <RecipeSource sourceUrl={recipe.sourceUrl} />
           </div>
           <div className="flex gap-2">
             <Link href={`/recipes/${recipe.id}/edit`}>
