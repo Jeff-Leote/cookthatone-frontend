@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-const BACKEND = process.env.API_URL ?? "http://localhost:3001";
+const BACKEND = process.env.API_URL ?? "http://localhost:3000";
 
 const COOKIE = "cto_refresh";
 
