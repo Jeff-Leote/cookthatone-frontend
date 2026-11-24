@@ -172,10 +172,13 @@ export const recipes = {
     prepTimeMin?: number;
     cookTimeMin?: number;
     servings?: number;
+    // À omettre quand il n'y a pas de source : l'API refuse `null` à la création.
+    sourceUrl?: string;
     ingredients?: { ingredientId: string; quantity: number; unit: Unit }[];
     steps?: { stepOrder: number; instruction: string }[];
   }) =>
     request<Recipe>("/recipes", { method: "POST", body: JSON.stringify(data) }),
+  // `sourceUrl` : une chaîne remplace la source, `null` l'efface, l'absence ne change rien.
   update: (id: string, data: Partial<Recipe>) =>
     request<Recipe>(`/recipes/${id}`, {
       method: "PATCH",
