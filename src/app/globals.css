@@ -2,11 +2,43 @@
 
 /*
  * Design tokens — alignés sur les maquettes (§4.1 du dossier CDA) :
- * fond noir, accent lime, Outfit (titres) / Inter (corps).
- * Contrastes vérifiés WCAG 2.1 (formule luminance relative sRGB) :
- *   accent sur fond   : 16.81:1 (AAA)
- *   texte secondaire  :  7.80:1 (AAA)
- *   texte principal   : 19.80:1 (AAA)
+ * accent lime sur fond noir, Outfit (titres) / Inter (corps).
+ *
+ * Deux thèmes qui suivent le réglage du système (prefers-color-scheme) :
+ * tout se joue en CSS, sans script, sans stockage, sans bouton, donc sans
+ * clignotement au chargement. Le sombre est la valeur par défaut ; le clair
+ * redéfinit les mêmes jetons (un seul --accent, dont la valeur change : le
+ * lime #c8ff3e est illisible sur fond clair, le thème clair prend un vert plus
+ * foncé de la même famille).
+ *
+ * Contrastes mesurés (WCAG 2.1, luminance relative sRGB ; teintes = couleur à
+ * 10 ou 15 % d'opacité composée sur la surface, comme Tailwind la rend).
+ * Une plage va du meilleur au pire des trois fonds (background, surface,
+ * surface-raised).
+ *
+ *                                      sombre          clair
+ *   texte principal / fond            19.80:1         18.97:1
+ *   texte secondaire / fond            7.85:1          7.41:1
+ *   accent en texte / fond            16.81:1          6.78:1
+ *   accent en texte / surface         15.64:1          7.08:1
+ *   texte sur bouton accent           16.81:1          7.08:1
+ *   ... au survol (brightness .95)    15.07:1          7.59:1
+ *   danger en texte / fond             7.16:1          6.20:1
+ *   success en texte / fond           11.36:1          6.83:1
+ *   anneau de focus / fond            16.81:1          6.78:1
+ *   text-accent sur bg-accent/10      11.43–13.78:1    5.57–6.10:1
+ *   text-accent sur bg-accent/15       9.79–11.92:1    5.17–5.64:1
+ *   text-danger sur bg-danger/10       5.47–6.43:1     4.99–5.46:1
+ *   text-danger sur bg-danger/15       5.03–5.97:1     4.58–5.01:1
+ *   text-success sur bg-success/5      9.13–10.67:1    6.03–6.61:1
+ *   text-success sur bg-success/8      8.58–10.16:1    5.77–6.32:1
+ *
+ * Points connus, hors de portée d'un changement de jetons :
+ *   - bordures de champs (--border) / fond : 1.21–1.38:1 en sombre,
+ *     1.34–1.48:1 en clair, sous les 3:1 de la règle 1.4.11 ; --border-strong
+ *     (survol) : 1.68–1.91:1 en sombre, 3.03–3.33:1 en clair ;
+ *   - placeholder (texte secondaire à 60 % d'opacité, classe des composants) :
+ *     3.32–3.44:1 en sombre, 2.79–2.90:1 en clair, sous les 4.5:1.
  */
 :root {
   --background: #0a0a0a;
@@ -22,6 +54,24 @@
   --danger-foreground: #ffffff;
   --success: #4ade80;
   --focus-ring: #c8ff3e;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #fafafa;
+    --surface: #ffffff;
+    --surface-raised: #f4f4f5;
+    --foreground: #0a0a0a;
+    --foreground-secondary: #52525b;
+    --border: #d4d4d8;
+    --border-strong: #8c8c95;
+    --accent: #3f6212;
+    --accent-foreground: #ffffff;
+    --danger: #b91c1c;
+    --danger-foreground: #ffffff;
+    --success: #166534;
+    --focus-ring: #3f6212;
+  }
 }
 
 @theme inline {
@@ -42,7 +92,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 body {
@@ -54,7 +104,8 @@ body {
  * RGAA : un indicateur de focus visible et à fort contraste est
  * obligatoire au clavier (critère 10.7). On ne s'appuie jamais sur
  * :focus seul (qui capte aussi les clics souris) — uniquement
- * :focus-visible, avec l'accent lime qui offre 16.81:1 de contraste.
+ * :focus-visible, avec --focus-ring (lime en sombre, vert foncé en clair :
+ * 16.81:1 et 6.78:1 contre le fond, au-dessus des 3:1 requis).
  */
 :focus {
   outline: none;

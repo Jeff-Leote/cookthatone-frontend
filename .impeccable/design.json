@@ -281,10 +281,10 @@
   ],
   "narrative": {
     "northStar": "Le Carnet de Cuisinier",
-    "overview": "CookthatOne est un outil de cuisine, pas une vitrine. Son identité visuelle part d'un carnet de notes professionnel tenu dans le noir : pages sombres où seul l'essentiel tranche, accent lime réservé aux actions qui méritent l'attention, typographie structurée qui organise l'information sans l'habiller. L'interface s'efface derrière les données de l'utilisateur.\n\nLe système est sombre par choix fonctionnel. Un fond #0a0a0a et des surfaces #141414 / #1a1a1a créent une hiérarchie lisible sans avoir recours aux ombres. L'accent lime (#c8ff3e) fonctionne comme un marqueur fluo : il n'apparaît que sur les éléments actifs et les appels à l'action.\n\nLes composants sont épurés mais humains : coins arrondis modérés (8-12 px), corps en Inter, titres en Outfit. Aucune ombre portée, pas de dégradé, pas d'animation décorative.",
+    "overview": "CookthatOne est un outil de cuisine, pas une vitrine. Son identité visuelle part d'un carnet de notes professionnel : des pages où seul l'essentiel tranche (sombres ou claires selon le système), un accent réservé aux actions qui méritent l'attention (lime sur fond sombre, vert foncé sur fond clair), une typographie structurée qui organise l'information sans l'habiller. L'interface s'efface derrière les données de l'utilisateur.\n\nLe système a deux thèmes qui suivent le réglage du système (prefers-color-scheme), sans bouton ni stockage : tout se joue en CSS, donc sans clignotement au chargement. Sombre par défaut : un fond #0a0a0a et des surfaces #141414 / #1a1a1a créent une hiérarchie lisible sans avoir recours aux ombres. Clair : fond #fafafa, surfaces #ffffff / #f4f4f5, texte #0a0a0a, texte secondaire #52525b, bordures #d4d4d8 / #8c8c95, danger #b91c1c, succès #166534. L'accent (lime #c8ff3e en sombre, vert foncé #3f6212 en clair, texte #ffffff dessus) fonctionne comme un marqueur : il n'apparaît que sur les éléments actifs et les appels à l'action.\n\nLes composants sont épurés mais humains : coins arrondis modérés (8-12 px), corps en Inter, titres en Outfit. Aucune ombre portée, pas de dégradé, pas d'animation décorative.",
     "keyCharacteristics": [
-      "Fond très sombre (quasi-noir), surfaces légèrement surélevées par la luminosité",
-      "Accent lime unique, réservé aux actions et aux indicateurs de focus",
+      "Deux thèmes qui suivent le système : fond quasi-noir ou quasi-blanc, surfaces légèrement surélevées par la luminosité",
+      "Accent unique (lime en sombre, vert foncé en clair), réservé aux actions et aux indicateurs de focus",
       "Zéro ombre portée : la profondeur est tonale, pas physique",
       "Mobile-first, dense mais lisible, cibles 44 px minimum",
       "Icônes SVG (Lucide React) uniquement, aucun emoji dans l'interface"
@@ -297,7 +297,12 @@
       },
       {
         "name": "La Règle Sémantique",
-        "body": "Danger (#f87171) et succès (#4ade80) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.",
+        "body": "Danger (#f87171 en sombre, #b91c1c en clair) et succès (#4ade80 en sombre, #166534 en clair) ne sont jamais utilisés comme couleurs décoratives — uniquement pour des états confirmés par la logique applicative.",
+        "section": "colors"
+      },
+      {
+        "name": "La Règle du Lime Clair",
+        "body": "Le lime #c8ff3e n'existe que sur fond sombre. Sur fond clair, le thème utilise le vert plus foncé #3f6212 : un seul jeton --accent, dont la valeur change avec le thème, jamais de lime sur du blanc.",
         "section": "colors"
       },
       {
@@ -317,7 +322,7 @@
       }
     ],
     "dos": [
-      "Do utiliser #c8ff3e uniquement pour les actions primaires et le focus — jamais pour la décoration ni les icônes passives.",
+      "Do utiliser l'accent (#c8ff3e en sombre, #3f6212 en clair) uniquement pour les actions primaires, l'état actif et le focus — jamais pour la décoration ni les icônes passives.",
       "Do maintenir au moins 44px de hauteur sur toutes les cibles tactiles (py-3 = 44px avec text-sm).",
       "Do utiliser role=\"status\" pour les confirmations de succès et role=\"alert\" pour les erreurs.",
       "Do afficher un état vide illustré (icône + texte + CTA) sur toute liste ou page pouvant être vide.",
@@ -327,7 +332,8 @@
       "Don't ajouter une box-shadow pour créer du relief — corriger la hiérarchie tonale.",
       "Don't descendre en dessous de 12px pour le texte, même pour les métadonnées.",
       "Don't utiliser des emoji dans l'interface — uniquement des icônes SVG Lucide React avec aria-hidden.",
-      "Don't mettre du texte lime (#c8ff3e) sur fond blanc ou surface claire — contraste insuffisant.",
+      "Don't mettre du texte lime (#c8ff3e) sur fond blanc ou surface claire — contraste insuffisant ; le thème clair utilise le vert plus foncé #3f6212 via le même jeton --accent.",
+      "Don't figer une couleur en dur dans un composant, ni ajouter un bouton ou un script de thème : seuls les jetons de globals.css portent les couleurs, et le thème suit le système.",
       "Don't utiliser window.confirm() — toujours ConfirmDialog avec description de ce qui sera perdu."
     ]
   }

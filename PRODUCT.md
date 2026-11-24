@@ -51,4 +51,4 @@ Dépôt frontend : `C:\Users\jeffl\Dev\Jeff-Dev\cookthatone-frontend`. Dépôt b
 
 ## Accessibility & Inclusion
 
-Standard visé : RGAA (niveau AA). Jalons J4 appliqués : texte ≥ 12 px, cibles tactiles ≥ 44 px, icônes SVG accessibles, navigation clavier complète (tablist ARIA, dialog natif), `prefers-reduced-motion` respecté, titres de page uniques par écran.
+Standard visé : RGAA (niveau AA). Jalons J4 appliqués : texte ≥ 12 px, cibles tactiles ≥ 44 px, icônes SVG accessibles, navigation clavier complète (tablist ARIA, dialog natif), `prefers-reduced-motion` respecté, titres de page uniques par écran. Le thème, sombre ou clair, suit le réglage du système (`prefers-color-scheme`), sans bouton ni stockage ; les contrastes sont mesurés pour les deux thèmes (relevé en tête de `globals.css`).
