@@ -206,95 +206,101 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
       )}
 
       {tab === "login" ? (
-        <form
+        <div
           id={`${tabListId}-login-panel`}
           role="tabpanel"
           aria-labelledby={`${tabListId}-login-tab`}
-          onSubmit={handleLogin}
-          className="flex flex-col gap-4"
-          noValidate
         >
-          <Field
-            label="Adresse email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-          />
-          <div className="flex flex-col gap-1.5">
+          <form
+            onSubmit={handleLogin}
+            className="flex flex-col gap-4"
+            noValidate
+          >
             <Field
-              label="Mot de passe"
-              name="password"
-              type="password"
-              autoComplete="current-password"
+              label="Adresse email"
+              name="email"
+              type="email"
+              autoComplete="email"
               required
             />
-            <Link
-              href="/forgot-password"
-              className="self-end text-xs text-foreground-secondary hover:text-foreground transition-colors"
-            >
-              Mot de passe oublié ?
-            </Link>
-          </div>
-
-          <Button type="submit" disabled={submitting} className="mt-1">
-            {submitting ? "Connexion…" : "Se connecter"}
-          </Button>
-
-          {showResend && (
-            <section
-              aria-labelledby={`${resendDialogId}-title`}
-              className="rounded-lg border border-border bg-surface-raised p-4 flex flex-col gap-3"
-            >
-              <p id={`${resendDialogId}-title`} className="text-sm font-medium">
-                Renvoyer l&apos;email de vérification
-              </p>
-
-              {resendError && (
-                <p
-                  role="alert"
-                  className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger"
-                >
-                  {resendError}
-                </p>
-              )}
-
-              <form
-                onSubmit={handleResend}
-                className="flex flex-col gap-3"
-                noValidate
+            <div className="flex flex-col gap-1.5">
+              <Field
+                label="Mot de passe"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
+              <Link
+                href="/forgot-password"
+                className="self-end text-xs text-foreground-secondary hover:text-foreground transition-colors"
               >
-                <Field
-                  label="Adresse email"
-                  name="resendEmail"
-                  type="email"
-                  autoComplete="email"
-                  defaultValue={resendEmail}
-                  required
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="submit"
-                    disabled={resendSubmitting}
-                    className="flex-1"
+                Mot de passe oublié ?
+              </Link>
+            </div>
+
+            <Button type="submit" disabled={submitting} className="mt-1">
+              {submitting ? "Connexion…" : "Se connecter"}
+            </Button>
+
+            {showResend && (
+              <section
+                aria-labelledby={`${resendDialogId}-title`}
+                className="rounded-lg border border-border bg-surface-raised p-4 flex flex-col gap-3"
+              >
+                <p
+                  id={`${resendDialogId}-title`}
+                  className="text-sm font-medium"
+                >
+                  Renvoyer l&apos;email de vérification
+                </p>
+
+                {resendError && (
+                  <p
+                    role="alert"
+                    className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-xs text-danger"
                   >
-                    {resendSubmitting ? "Envoi…" : "Renvoyer"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setShowResend(false);
-                      setResendError(null);
-                    }}
-                  >
-                    Annuler
-                  </Button>
-                </div>
-              </form>
-            </section>
-          )}
-        </form>
+                    {resendError}
+                  </p>
+                )}
+
+                <form
+                  onSubmit={handleResend}
+                  className="flex flex-col gap-3"
+                  noValidate
+                >
+                  <Field
+                    label="Adresse email"
+                    name="resendEmail"
+                    type="email"
+                    autoComplete="email"
+                    defaultValue={resendEmail}
+                    required
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="submit"
+                      disabled={resendSubmitting}
+                      className="flex-1"
+                    >
+                      {resendSubmitting ? "Envoi…" : "Renvoyer"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        setShowResend(false);
+                        setResendError(null);
+                      }}
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </form>
+              </section>
+            )}
+          </form>
+        </div>
       ) : registerMessage ? (
         <div
           id={`${tabListId}-register-panel`}
@@ -317,52 +323,55 @@ export function AuthForm({ initialTab }: { initialTab: Tab }) {
           </Button>
         </div>
       ) : (
-        <form
+        <div
           id={`${tabListId}-register-panel`}
           role="tabpanel"
           aria-labelledby={`${tabListId}-register-tab`}
-          onSubmit={handleRegister}
-          className="flex flex-col gap-4"
-          noValidate
         >
-          <Field
-            label="Adresse email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-          />
-          <Field
-            label="Pseudo"
-            name="pseudo"
-            type="text"
-            autoComplete="username"
-            placeholder="ex. sophie_cuisine"
-            hint="3 à 20 caractères, lettres/chiffres/underscore uniquement"
-            minLength={3}
-            maxLength={20}
-            required
-          />
-          <Field
-            label="Mot de passe"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            required
-          />
-          <Field
-            label="Confirmer le mot de passe"
-            name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            required
-          />
-          <Button type="submit" disabled={submitting} className="mt-1">
-            {submitting ? "Création…" : "Créer mon compte"}
-          </Button>
-        </form>
+          <form
+            onSubmit={handleRegister}
+            className="flex flex-col gap-4"
+            noValidate
+          >
+            <Field
+              label="Adresse email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+            />
+            <Field
+              label="Pseudo"
+              name="pseudo"
+              type="text"
+              autoComplete="username"
+              placeholder="ex. sophie_cuisine"
+              hint="3 à 20 caractères, lettres/chiffres/underscore uniquement"
+              minLength={3}
+              maxLength={20}
+              required
+            />
+            <Field
+              label="Mot de passe"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+            <Field
+              label="Confirmer le mot de passe"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+            <Button type="submit" disabled={submitting} className="mt-1">
+              {submitting ? "Création…" : "Créer mon compte"}
+            </Button>
+          </form>
+        </div>
       )}
     </Card>
   );
